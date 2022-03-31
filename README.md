@@ -7,7 +7,7 @@ This is the repository for the backend of the automated infrastructure deploymen
 To start developping on this project, you must have installed :
 - python3
 
-Start by executing `pip install -r requirements.txt`
+Start by executing : `pip install -r requirements.txt`
 
 You can then launch the server by executing the file api_run.py
 
