@@ -6,27 +6,28 @@
 import os
 from jinja2 import Template
 
+from models.TerraformConfig import TerraformConfig
 
-def store_terraform_infra(networks, machines, name=None):
+
+def store_terraform_infra(config: TerraformConfig):
     """
     Stores the machines in the Terraform state file.
 
-    :param name:
-    :param networks:
-    :param machines: list of machines to store
+    :param config: the config to store
     :return: None
     """
-    if not name:
-        name = os.urandom(16).hex()
     if not os.path.exists(f'./config/terraform_configs'):
         os.makedirs(f'./config/terraform_configs/')
-    with open(f'./config/terraform_configs/{name}.tf', "w") as f:
+    with open(f'./config/terraform_configs/{config.name}.tf', "w") as f:
         # generate jinja template
         locals_template = open('./templates/tf/locals.tf.j2', 'r')
         template = Template(locals_template.read(), trim_blocks=True, lstrip_blocks=True)
         locals_template.close()
         # render template
-        rendered_template = template.render(machines=machines)
+        rendered_template = template.render(machines=config.machines, networks=config.networks,
+                                            project_id=config.project_id, region=config.region,
+                                            ssh_user=config.ssh_user,
+                                            private_key_path=f'./config/secrets/{config.private_key_name}')
         # write to file
         f.write(rendered_template)
         f.close()

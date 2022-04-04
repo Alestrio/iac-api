@@ -12,7 +12,7 @@ from fastapi import APIRouter
 
 from data.storage import TerraformStorage as storage
 from models.Machine import Machine
-
+from models.TerraformConfig import TerraformConfig
 
 router = APIRouter(
     prefix="/config",
@@ -37,9 +37,9 @@ async def get_tf_configs_names():
 
 
 @router.post("/tf_config")
-async def create_config(machines: list[Machine]):
+async def create_config(config: TerraformConfig):
     """
     Create a terraform infra config file.
     """
-    return storage.store_terraform_infra(None, machines)
+    return storage.store_terraform_infra(config)
 
