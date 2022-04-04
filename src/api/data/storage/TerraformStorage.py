@@ -22,7 +22,9 @@ def store_terraform_infra(networks, machines, name=None):
         os.makedirs(f'./config/terraform_configs/')
     with open(f'./config/terraform_configs/{name}.tf', "w") as f:
         # generate jinja template
-        template = Template(open('./templates/tf/locals.tf.j2', 'r').read(), trim_blocks=True, lstrip_blocks=True)
+        locals_template = open('./templates/tf/locals.tf.j2', 'r')
+        template = Template(locals_template.read(), trim_blocks=True, lstrip_blocks=True)
+        locals_template.close()
         # render template
         rendered_template = template.render(machines=machines)
         # write to file
