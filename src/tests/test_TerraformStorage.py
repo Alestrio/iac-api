@@ -16,17 +16,6 @@ class Test(TestCase):
         """
         Test that we can store a terraform infra
         """
-        """
-        class Disk(BaseModel):
-            id: Optional[str]
-            provider: str
-            type: str
-            subtype: str
-            size: int
-            region: str
-            zone: str
-            name: str
-        """
         machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
                                         zone="eu-west-1a", name="disk1")])]
         # store the terraform infra
@@ -35,4 +24,16 @@ class Test(TestCase):
         file_exists = os.path.isfile("./config/terraform_configs/test_terraform_infra.tf")
         self.assertTrue(file_exists)
         # remove the terraform infra
-        #os.remove("./config/terraform_configs/test_terraform_infra.tf")
+        # os.remove("./config/terraform_configs/test_terraform_infra.tf")
+
+    def test_get_all_config_names(self):
+        """
+        Test that we can get all the config names
+        """
+        if len(os.listdir("./config/terraform_configs")) == 0:
+            machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
+                                            zone="eu-west-1a", name="disk1")])]
+            # store the terraform infra
+            TerraformStorage.store_terraform_infra(None, machines, "test_terraform_infra")
+        config_names = TerraformStorage.get_all_config_names()
+        self.assertTrue(len(config_names) > 0)

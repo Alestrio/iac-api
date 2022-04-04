@@ -29,3 +29,12 @@ def store_terraform_infra(networks, machines, name=None):
         f.write(rendered_template)
         f.close()
     return True
+
+
+def get_all_config_names():
+    """
+    Returns a list of all the terraform configs.
+
+    :return: list of all the terraform configs
+    """
+    return os.listdir('./config/terraform_configs/')

@@ -10,7 +10,7 @@
 #  forbidden except with authorization from the authors.
 from fastapi import APIRouter
 
-from data.storage import TerraformStorage
+from data.storage import TerraformStorage as storage
 from models.Machine import Machine
 
 
@@ -27,10 +27,19 @@ router = APIRouter(
     },
 )
 
-@router.post("/terraform_infra")
+
+@router.get("/tf_configs")
+async def get_tf_configs_names():
+    """
+    Get all terraform infra config files.
+    """
+    return storage.get_all_config_names()
+
+
+@router.post("/tf_config")
 async def create_config(machines: list[Machine]):
     """
     Create a terraform infra config file.
     """
-    return TerraformStorage.store_terraform_infra(None, machines)
+    return storage.store_terraform_infra(None, machines)
 
