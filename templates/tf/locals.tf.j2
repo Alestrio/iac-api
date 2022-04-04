@@ -6,41 +6,41 @@ locals {
     private_key_path = {{ private_key_path }}
 
     machines = {
-        {% i = 1 %}
-        {% for machine in machines %}
-            machine_{{ i }} = {
-                name = "{{ machine.name }}"
-                {% if machine.gcp_type != "" %}
-                gcp_type = "{{ machine.type }}"
-                {% else %}
-                cpu = {{ machine.cpu }}
-                memory = {{ machine.memory }}
-                {% endif %}
-                {% if machine.aws_type != "" %}
-                aws_type = "{{ machine.type }}"
-                {% else %}
-                gcp_zone = "{{ machine.gcp_zone }}"
-                aws_zone = "{{ machine.aws_zone }}"
-                gcp_network = {{ machine.gcp_network if machine.gcp_network else 'default' }}
-                aws_network = {{ machine.aws_network if machine.aws_network else 'default' }}
-                disks = {
-                    {% j = 1 %}
-                    {% for disk in disks %}
-                    disk_{{ j }} = {
-                        gcp_type = "{{ disk.gcp_type }}"
-                        aws_type = "{{ disk.aws_type }}"
-                        size = {{ disk.size }}
-                        gcp_zone = "{{ disk.gcp_zone }}"
-                        aws_zone = "{{ disk.aws_zone }}"
-                        {% if disk.image %}
-                        image = "{{ disk.image }}"
-                        {% endif %}
-                    }
-                    {% j = j + 1 %}
-                    {% endfor %}
+    {% set i = 1 %}
+    {% for machine in machines %}
+        machine_{{ i }} = {
+            name = "{{ machine.name }}"
+            {% if machine.gcp_type != "" %}
+            gcp_type = "{{ machine.gcp_type }}"
+            {% else %}
+            cpu = {{ machine.cpu }}
+            memory = {{ machine.memory }}
+            {% endif %}
+            {% if machine.aws_type != "" %}
+            aws_type = "{{ machine.aws_type }}"
+            {% endif %}
+            gcp_zone = "{{ machine.gcp_zone }}"
+            aws_zone = "{{ machine.aws_zone }}"
+            gcp_network = {{ machine.gcp_network }}
+            aws_network = {{ machine.aws_network}}
+            disks = [
+                {% set j = 1 %}
+                {% for disk in machine.disks %}
+                disk_{{ j }} = {
+                    name = "{{ disk.name }}"
+                    gcp_type = "{{ disk.gcp_type }}"
+                    aws_type = "{{ disk.aws_type }}"
+                    size = {{ disk.size }}
+                    gcp_zone = "{{ disk.gcp_zone }}"
+                    aws_zone = "{{ disk.aws_zone }}"
+                    {% if disk.image %}
+                    image = "{{ disk.image }}"
+                    {% endif %}
                 }
-            }
-            {% i = i + 1 %}
-        {% endfor %}
+                {% set j = j + 1 %}
+                {% endfor %}
+            ]
+        }
+        {% set i = i + 1 %}{% endfor %}
     }
 }
