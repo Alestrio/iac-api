@@ -4,7 +4,7 @@
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
 
-#Create an abstract class for data providers
+# Create an abstract class for data providers
 
 class Provider:
     def __init__(self):
