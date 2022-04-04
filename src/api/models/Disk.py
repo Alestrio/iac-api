@@ -23,4 +23,4 @@ class Disk(BaseModel):
     gcp_region: str = "europe-west1"
     aws_zone: str = "eu-central-1a"
     gcp_zone: str = "europe-west1-b"
-    name: str = "disk"
+    name: Optional[str]

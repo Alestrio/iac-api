@@ -26,7 +26,7 @@ class Machine(BaseModel):
     :param machine_name: The name of the machine, default is "machine"
     """
 
-    name: str = "machine"
+    name: Optional[str]
     cpu: int = 0
     memory: int = 0
     gcp_type: Optional[str] = "e2-micro"
