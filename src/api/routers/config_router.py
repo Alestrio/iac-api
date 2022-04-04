@@ -38,3 +38,11 @@ async def create_config(config: TerraformConfig):
     """
     return storage.store_terraform_infra(config)
 
+
+@router.delete("/tf_config/{name}")
+async def delete_config(name: str):
+    """
+    Delete a terraform infra config file.
+    """
+    return storage.delete_terraform_infra(name)
+

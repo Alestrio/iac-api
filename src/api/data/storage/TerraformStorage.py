@@ -41,3 +41,13 @@ def get_all_config_names():
     :return: list of all the terraform configs
     """
     return os.listdir('./config/terraform_configs/')
+
+
+def delete_terraform_infra(name):
+    """
+    Deletes the terraform config with the given name.
+
+    :param name: the name of the config to delete
+    :return: None
+    """
+    os.remove(f'./config/terraform_configs/{name}')
