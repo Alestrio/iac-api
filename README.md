@@ -16,7 +16,56 @@ You can then launch the server by executing the file api_run.py
 To install the project on a production :
 
 ```yml
-[...]
+version: 3
+services:
+    api:
+        image: mahjopi.gcr.io/the_image_name:latest
+        restart: always
+        container_name: api
+        depends_on:
+             - mongo
+             - traefik
+             - terraform
+             - ansible
+        volumes:
+            - /var/api/config/:/home/api/config/ # Mounts the config folder
+            - /var/log/api/:/home/api/log/
+        networks:
+            - backend:
+        tags:
+            - traefik.enable=true
+            - traefik.backend.entryPoints=http
+            - traefik.backend.passHostHeader=true
+            - traefik.http.routers.backend-http.rule=Host(`THEDOMAIN`)
+    traefik:
+        image: traefik
+        container_name: traefik
+        restart: always
+        volumes:
+            - /var/traefik/:/etc/traefik/
+            # path to docker socket
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - backend:
+    terraform:
+        image: hashicorp/terraform:latest
+        container_name: terraform
+        restart: always
+        volumes:
+            - /var/terraform/:/home/terraform/
+        networks:
+            - backend:
+    ansible:
+        image: ansible/ansible:latest
+        container_name: ansible
+        restart: always
+        volumes:
+            - /var/ansible/:/home/ansible/
+        networks:
+            - backend:
+
+    networks:
+        backend:
 ```
 
 ## Automated tests
