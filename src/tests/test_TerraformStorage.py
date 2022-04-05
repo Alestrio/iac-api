@@ -32,10 +32,10 @@ class Test(TestCase):
         # store the terraform infra
         TerraformStorage.store_terraform_infra(config)
         # check that the terraform infra has been stored
-        file_exists = os.path.isfile("./config/terraform_configs/test_terraform_infra.tf")
+        file_exists = os.path.isfile("./config/terraform_configs/test_terraform_infra/main.tf")
         self.assertTrue(file_exists)
-        TerraformStorage.delete_terraform_infra("test_terraform_infra.tf")
-        self.assertFalse(os.path.isfile("./config/terraform_configs/test_terraform_infra.tf"))
+        TerraformStorage.delete_terraform_infra("test_terraform_infra")
+        self.assertFalse(os.path.isfile("./config/terraform_configs/test_terraform_infra/main.tf"))
 
     def test_get_all_config_names(self):
         """
@@ -49,7 +49,7 @@ class Test(TestCase):
             TerraformStorage.store_terraform_infra(config)
         config_names = TerraformStorage.get_all_config_names()
         self.assertTrue(len(config_names) > 0)
-        TerraformStorage.delete_terraform_infra("test_terraform_infra.tf")
+        TerraformStorage.delete_terraform_infra("test_terraform_infra")
         self.assertFalse(os.path.isfile("./config/terraform_configs/test_terraform_infra.tf"))
 
     # def test_terraform_infra_content(self):

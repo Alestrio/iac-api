@@ -33,9 +33,9 @@ def store_terraform_infra(config: TerraformConfig):
     :param config: the config to store
     :return: None
     """
-    if not os.path.exists(f'./config/terraform_configs'):
-        os.makedirs(f'./config/terraform_configs/')
-    with open(f'./config/terraform_configs/{config.name}.tf', "w") as f:
+    if not os.path.exists(f'./config/terraform_configs/{config.name}'):
+        os.makedirs(f'./config/terraform_configs/{config.name}')
+    with open(f'./config/terraform_configs/{config.name}/main.tf', "w") as f:
         # generate jinja template
         locals_template = open('./templates/tf/locals.tf.j2', 'r')
         template = Template(locals_template.read(), trim_blocks=True, lstrip_blocks=True, )
@@ -67,4 +67,5 @@ def delete_terraform_infra(name):
     :param name: the name of the config to delete
     :return: None
     """
-    os.remove(f'./config/terraform_configs/{name}')
+    os.remove(f'./config/terraform_configs/{name}/main.tf')
+    os.rmdir(f'./config/terraform_configs/{name}')
