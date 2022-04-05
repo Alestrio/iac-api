@@ -1,0 +1,35 @@
+provider "google" {
+    project = locals.project_id
+    region = locals.region
+}
+
+{% for net in networks %}
+resource "google_compute_network" "{{net.name}}" {
+    name = "{{net.name}}"
+    auto_create_subnetworks = {{ "true" if net.subnet != "" else "false" }}
+    {% if net.subnet %}
+    ipv4_range = "{{net.subnet}}"
+    {% endif %}
+}
+
+{% for firewall in net.firewall_rules %}
+resource "google_compute_firewall" "{{firewall.name}}" {
+{#  allow or deny => class name to lower case #}
+{%  for rule in firewall.rules %}
+    {{ rule.__class__.__name__ }} = {
+        ports = {{ rule.ports }}
+        protocol = "{{ rule.protocol }}"
+        source_networks = {{ rule.source_networks }}
+    }
+{% endfor %}
+    {% if firewall.target_tags != [] %}
+    target_tags = {{ firewall.target_tags }}
+    {% endif %}
+    priority = 1000
+}
+{% endfor %}
+{% endfor %}
+
+
+
+
