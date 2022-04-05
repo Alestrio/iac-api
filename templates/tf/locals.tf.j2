@@ -8,6 +8,7 @@ locals {
     {% for machine in machines %}
         {{ machine.name if machine.name else "machine_{}".format(loop.index) }} = {
             name = "{{ machine.name }}"
+            providers = {{ machine.providers }}
             {% if machine.gcp_type != "" %}
             gcp_type = "{{ machine.gcp_type }}"
             {% else %}
@@ -25,6 +26,7 @@ locals {
                 {% for disk in machine.disks %}
                 {{ disk.name if disk.name else "disk_{}".format(loop.index) }} = {
                     name = "{{ disk.name }}"
+                    providers = {{ disk.providers }}
                     gcp_type = "{{ disk.gcp_type }}"
                     aws_type = "{{ disk.aws_type }}"
                     size = {{ disk.size }}
