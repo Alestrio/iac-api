@@ -12,7 +12,8 @@ from models.Disk import Disk
 
 class Machine(BaseModel):
     """
-    :param disks: List of Disk objects, disks to be attached to the machine \
+    :param disks: List of Disk objects, disks to be attached to the machine
+    :param providers: List of provider names, providers to be used for the machine
     :param gcp_zone: Zone of the GCP machine, default is us-central1-a
     :param aws_zone: Zone of the AWS machine, default is eu-west-3
     :param gcp_network: Network of the GCP machine, default is "default"
@@ -27,6 +28,7 @@ class Machine(BaseModel):
     """
 
     name: Optional[str]
+    providers: list[str] = ['gcp']
     cpu: int = 0
     memory: int = 0
     gcp_type: Optional[str] = "e2-micro"
