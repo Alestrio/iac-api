@@ -14,17 +14,3 @@ class Rule(BaseModel):
     protocol: str = "tcp"
     ports: list[int] = [80]
     source_networks: list[str] = ["0.0.0.0/0"]
-
-
-class Allow(Rule):
-    """
-    A rule that allows traffic
-    """
-    pass
-
-
-class Deny(Rule):
-    """
-    A rule that denies traffic
-    """
-    pass
