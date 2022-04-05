@@ -9,6 +9,23 @@ from jinja2 import Template
 from models.TerraformConfig import TerraformConfig
 
 
+def render_content_templates(config: TerraformConfig):
+    """
+    Renders the content templates for the given config.
+
+    :param config: the config to render
+    :return: None
+    """
+    templates = ['gcp']
+    content = ""
+    for template in templates:
+        with open(f'./templates/tf/{template}_content.tf.j2', 'r') as f:
+            template = Template(f.read(), trim_blocks=True, lstrip_blocks=True)
+            rendered_template = template.render(machines=config.machines, networks=config.networks)
+            content += rendered_template
+    return content
+
+
 def store_terraform_infra(config: TerraformConfig):
     """
     Stores the machines in the Terraform state file.
@@ -29,7 +46,7 @@ def store_terraform_infra(config: TerraformConfig):
                                             ssh_user=config.ssh_user,
                                             private_key_path=f'./config/secrets/{config.private_key_name}')
         # write to file
-        f.write(rendered_template)
+        f.write(rendered_template + '\n' + render_content_templates(config))
         f.close()
     return True
 
