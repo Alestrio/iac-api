@@ -2,7 +2,7 @@ locals {
     project_id       = {{ project_id }}
     region           = {{ region }}
     ssh_user         = {{ ssh_user }}
-    private_key_path = {{ private_key_path }}
+    private_key_path = "{{ private_key_path }}"
 
     machines = {
     {% for machine in machines %}
