@@ -17,6 +17,7 @@ resource "google_compute_firewall" "{{firewall.name}}" {
     name = "{{firewall.name}}"
     network = "{{ net.name }}"
 {#  allow or deny => class name to lower case #}
+{% if firewall.allows %}
 {%  for rule in firewall.allows %}
         allow = {
             ports = {{ rule.ports }}
@@ -24,6 +25,8 @@ resource "google_compute_firewall" "{{firewall.name}}" {
             source_networks = {{ rule.source_networks }}
         }
 {% endfor %}
+{% endif %}
+{% if firewall.denies %}
 {%  for rule in firewall.denies %}
         deny = {
             ports = {{ rule.ports }}
@@ -31,6 +34,7 @@ resource "google_compute_firewall" "{{firewall.name}}" {
             source_networks = {{ rule.source_networks }}
         }
 {% endfor %}
+{% endif %}
     {% if firewall.target_tags != [] %}
     target_tags = {{ firewall.target_tags }}
     {% endif %}
