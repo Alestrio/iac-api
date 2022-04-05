@@ -24,7 +24,7 @@ locals {
             aws_network = {{ machine.aws_network}}
             disks = [
                 {% for disk in machine.disks %}
-                {{ disk.name if disk.name else "disk_{}".format(loop.index) }} = {
+                {
                     name = "{{ disk.name }}"
                     providers = {{ disk.providers }}
                     gcp_type = "{{ disk.gcp_type }}"
