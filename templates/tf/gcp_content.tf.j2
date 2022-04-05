@@ -1,6 +1,6 @@
 provider "google" {
-    project = locals.project_id
-    region = locals.region
+    project = local.project_id
+    region = local.region
 }
 
 {% for net in networks %}
@@ -43,6 +43,35 @@ resource "google_compute_firewall" "{{firewall.name}}" {
 {% endfor %}
 {% endfor %}
 
+resource "google_compute_instance" "instances"{
+    for_each = {
+        for k, v in local.machines : k => v
+        if contains(v.providers, "gcp")
+    }
 
+    name = each.key
+    machine_type = each.value.gcp_type
+    zone = each.value.gcp_zone
+    boot_disk {
+        initialize_params {
+            image = each.value.disks.0.image
+        }
+    }
+    network_interface {
+        network = each.value.gcp_network
+        access_config {
+            nat_ip = google_compute_address.addr-front.address
+        }
+    }
+
+    provisioner "remote-exec" {
+        connection {
+          type        = "ssh"
+          user        = local.ssh_user
+          private_key = file(local.private_key_path)
+          host        = self.network_interface.0.access_config.0.nat_ip
+        }
+    }
+}
 
 
