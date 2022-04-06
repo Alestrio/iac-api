@@ -18,10 +18,27 @@ class Network(BaseModel):
     """
     id: Optional[str] = None
     name: Optional[str] = None
-    gcp_zone: str = "europe-west1"
+    gcp_zone: Optional[str] = None
     aws_zone: str = "eu-west-1"
-    subnet: Optional[list[Subnetwork]] = None
+    subnet: Optional[Subnetwork] = None
     description: str = "network"
     firewall_rules: list[FirewallRule]
     routing_type: str = "static"
     mtu: int = 1500
+
+    @staticmethod
+    def from_google_network(response, subnetworks, firewalls):
+        """
+        Converts a Google network to a Network model
+        :param firewalls:
+        :param subnetworks:
+        :param response: Google network response
+        :return: Network model
+        """
+        return Network(
+            id=response["id"],
+            name=response["name"],
+            subnet=subnetworks,
+            firewall_rules=list(firewalls),
+            #mtu=int(response["mtu"])
+        )

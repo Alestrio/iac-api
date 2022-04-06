@@ -4,12 +4,13 @@
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
 import os
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
 from models.Disk import Disk
 from models.Network.Address import Address
+from models.Network.Network import Network
 
 
 class Machine(BaseModel):
@@ -39,7 +40,7 @@ class Machine(BaseModel):
     aws_machine_image: str = "ami-0f9c9d7f2b6c8f9d6"
     gcp_zone: str = "europe-west1-b"
     aws_zone: str = "eu-west-1a"
-    gcp_network: str = "default"
+    gcp_network: Optional[Network] = None
     aws_network: str = "default"
     address: Address = Address(name=f"machine-address-{os.urandom(4).hex()}")
     disks: list[Disk]

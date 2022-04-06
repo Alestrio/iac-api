@@ -14,3 +14,11 @@ class Address(BaseModel):
     address_type: Optional[str] = None
     address: Optional[str] = None
     gcp_region: Optional[str] = None
+
+    @staticmethod
+    def from_google_address(google_dict: dict):
+        return Address(
+            name=google_dict["name"],
+            address_type=google_dict["type"],
+            address=google_dict["natIP"] if "natIP" in google_dict else None,
+        )
