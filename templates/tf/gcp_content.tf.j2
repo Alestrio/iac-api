@@ -14,7 +14,7 @@ resource "google_compute_firewall" "{{firewall.name}}" {
     name = "{{firewall.name}}"
     network = "{{ net.name }}"
 {#  allow or deny => class name to lower case #}
-{%  for rule in firewall.rules %}
+{% for rule in firewall.rules %}
         {{ "allow" if firewall.is_allow else "deny" }} {
             ports = {{ rule.ports }}
             protocol = "{{ rule.protocol }}"
