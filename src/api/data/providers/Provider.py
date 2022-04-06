@@ -5,6 +5,8 @@
 #  forbidden except with authorization from the authors.
 
 # Create an abstract class for data providers
+from abc import abstractmethod
+
 
 class Provider:
     def __init__(self):
@@ -13,6 +15,7 @@ class Provider:
         """
         pass
 
+    @abstractmethod
     def get_deployed_instances(self):
         """
         Returns a list of instances that are deployed on the provider
@@ -20,6 +23,7 @@ class Provider:
         """
         pass
 
+    @abstractmethod
     def get_deployed_networks(self):
         """
         Returns a list of networks that are deployed on the provider
