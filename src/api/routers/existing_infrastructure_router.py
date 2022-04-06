@@ -3,8 +3,12 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import json
+
 from fastapi import APIRouter
-from src.api import providers
+
+from data.providers import AWSProvider
+from data.providers.GCPProvider import GCPProvider
 
 router = APIRouter(
     prefix="/existing",
@@ -19,8 +23,13 @@ router = APIRouter(
     },
 )
 
+providers = {
+    "aws": AWSProvider,
+    "gcp": GCPProvider,
+}
 
-@router.get("/{provider}", response_model=str)
+
+@router.get("/{provider}")
 async def get_existing_infrastructure(provider: str):
     """
     Get existing infrastructure
@@ -29,3 +38,5 @@ async def get_existing_infrastructure(provider: str):
     # instantiate the provider
     provider_instance = provider()
     provider = provider_instance
+    machines = provider.get_deployed_instances()
+    return machines
