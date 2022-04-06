@@ -7,7 +7,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from models.FirewallRule import FirewallRule
+from models.Network.FirewallRule import FirewallRule
+from models.Network.Subnetwork import Subnetwork
 
 
 class Network(BaseModel):
@@ -19,7 +20,7 @@ class Network(BaseModel):
     name: Optional[str] = None
     gcp_zone: str = "europe-west1"
     aws_zone: str = "eu-west-1"
-    subnet: str = ""
+    subnet: Optional[list[Subnetwork]] = None
     description: str = "network"
     firewall_rules: list[FirewallRule]
     routing_type: str = "static"

@@ -3,21 +3,14 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
-from typing import Optional, Union
 
+from typing import Optional
 from pydantic import BaseModel, validator
-
-from models.Rule import Rule
+from models.Network.Rule import Rule
 
 
 class FirewallRule(BaseModel):
     name: Optional[str]
-    allows: Optional[list[Rule]]
-    denies: Optional[list[Rule]]
+    is_allow: bool = True
+    rules: Optional[list[Rule]] = None
     target_tags: list[str] = []
-
-    @validator("allows", "denies")
-    def check_not_all_rules_are_empty(cls, rules: list, values):
-        if not rules:
-            raise ValueError("At least one rule must be specified")
-        return rules
