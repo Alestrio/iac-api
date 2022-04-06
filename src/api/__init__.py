@@ -8,13 +8,9 @@
 import uvicorn
 from fastapi import FastAPI
 
-from routers import config_router
+from routers import config_router, existing_infrastructure_router
 
 app = FastAPI()
 
 app.include_router(config_router.router)
-
-providers = {
-    "aws": "src.api.data.AWSProvider",
-    "gcp": "src.api.data.GCPProvider",
-}
+app.include_router(existing_infrastructure_router.router)
