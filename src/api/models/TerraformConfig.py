@@ -8,7 +8,7 @@ import os
 from pydantic import BaseModel
 
 from models.Machine import Machine
-from models.Network import Network
+from models.Network.Network import Network
 
 
 class TerraformConfig(BaseModel):

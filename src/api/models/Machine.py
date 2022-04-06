@@ -3,11 +3,13 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import os
 from typing import Optional
 
 from pydantic import BaseModel
 
 from models.Disk import Disk
+from models.Network.Address import Address
 
 
 class Machine(BaseModel):
@@ -39,4 +41,5 @@ class Machine(BaseModel):
     aws_zone: str = "eu-west-1a"
     gcp_network: str = "default"
     aws_network: str = "default"
+    address: Address = Address(name=f"machine-address-{os.urandom(4).hex()}")
     disks: list[Disk]
