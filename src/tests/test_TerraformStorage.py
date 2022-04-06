@@ -8,11 +8,12 @@ from unittest import TestCase
 
 from data.storage import TerraformStorage
 from models.Disk import Disk
-from models.FirewallRule import FirewallRule
+from models.Network.FirewallRule import FirewallRule
 from models.Machine import Machine
-from models.Network import Network
+from models.Network.Network import Network
+from models.Network.Subnetwork import Subnetwork
 from models.TerraformConfig import TerraformConfig
-from models.Rule import Rule
+from models.Network.Rule import Rule
 
 # expected_content = """locals {
 #     project_id       = 000-test
@@ -22,15 +23,19 @@ from models.Rule import Rule
 
 
 class Test(TestCase):
+    machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
+                                    zone="eu-west-1a", name="disk1")])]
+    networks = [Network(name="a_network", subnet=[Subnetwork(name="a_subnetwork", network_name="a_network")],
+                        firewall_rules=[FirewallRule(name="test", allows=[Rule()])]
+                        )]
+    config = TerraformConfig(machines=machines, name="test_terraform_infra", project_id="000-test", networks=[])
+
     def test_store_terraform_infra(self):
         """
         Test that we can store a terraform infra
         """
-        machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
-                                        zone="eu-west-1a", name="disk1")])]
-        config = TerraformConfig(machines=machines, name="test_terraform_infra", project_id="000-test", networks=[])
         # store the terraform infra
-        TerraformStorage.store_terraform_infra(config)
+        TerraformStorage.store_terraform_infra(self.config)
         # check that the terraform infra has been stored
         file_exists = os.path.isfile("./config/terraform_configs/test_terraform_infra/main.tf")
         self.assertTrue(file_exists)
@@ -42,11 +47,7 @@ class Test(TestCase):
         Test that we can get all the config names
         """
         if not os.path.isfile("./config/terraform_configs/test_terraform_infra.tf"):
-            machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
-                                            zone="eu-west-1a", name="disk1")])]
-            config = TerraformConfig(machines=machines, name="test_terraform_infra", project_id="000-test", networks=[])
-            # store the terraform infra
-            TerraformStorage.store_terraform_infra(config)
+            TerraformStorage.store_terraform_infra(self.config)
         config_names = TerraformStorage.get_all_config_names()
         self.assertTrue(len(config_names) > 0)
         TerraformStorage.delete_terraform_infra("test_terraform_infra")
@@ -72,8 +73,4 @@ class Test(TestCase):
         """
         Test the render content template method
         """
-        machines = [Machine(disks=[Disk(provider="aws", type="ebs", subtype="gp2", size=100, region="eu-west-1",
-                                        zone="eu-west-1a", name="disk1")])]
-        networks = [Network(name="a_network", subnet="192.168.0.0/24", firewall_rules=[FirewallRule(name="test", rules=[Rule()])])]
-        config = TerraformConfig(machines=machines, name="test_terraform_infra", project_id="000-test", networks=networks)
-        assert(TerraformStorage.render_content_templates(config) != "")
+        assert(TerraformStorage.render_content_templates(self.config) != "")

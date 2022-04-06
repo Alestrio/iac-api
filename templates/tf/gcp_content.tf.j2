@@ -7,9 +7,6 @@ provider "google" {
 resource "google_compute_network" "{{net.name}}" {
     name = "{{net.name}}"
     auto_create_subnetworks = {{ "true" if net.subnet != "" else "false" }}
-    {% if net.subnet %}
-    ipv4_range = "{{net.subnet}}"
-    {% endif %}
 }
 
 {% for firewall in net.firewall_rules %}
@@ -17,50 +14,54 @@ resource "google_compute_firewall" "{{firewall.name}}" {
     name = "{{firewall.name}}"
     network = "{{ net.name }}"
 {#  allow or deny => class name to lower case #}
-{% if firewall.allows %}
-{%  for rule in firewall.allows %}
-        allow = {
+{%  for rule in firewall.rules %}
+        {{ "allow" if firewall.is_allow else "deny" }} {
             ports = {{ rule.ports }}
             protocol = "{{ rule.protocol }}"
-            source_networks = {{ rule.source_networks }}
         }
 {% endfor %}
-{% endif %}
-{% if firewall.denies %}
-{%  for rule in firewall.denies %}
-        deny = {
-            ports = {{ rule.ports }}
-            protocol = "{{ rule.protocol }}"
-            source_networks = {{ rule.source_networks }}
-        }
-{% endfor %}
-{% endif %}
     {% if firewall.target_tags != [] %}
     target_tags = {{ firewall.target_tags }}
     {% endif %}
     priority = 1000
 }
 {% endfor %}
+
+{% for subnet in net.subnets %}
+resource "google_compute_subnetwork" "{{subnet.name}}" {
+    name = "{{subnet.name}}"
+    ip_cidr_range = "{{subnet.ip_cidr_range}}"
+    network = "{{ net.name }}"
+    region = "{{ local.region }}"
+    private_ip_google_access = "{{ subnet.private_ip_google_access }}"
+}
+{% endfor %}
 {% endfor %}
 
-resource "google_compute_instance" "instances"{
-    for_each = {
-        for k, v in local.machines : k => v
-        if contains(v.providers, "gcp")
-    }
+{% for machine in machines %}
+resource "google_compute_address" "{{ machine.address.name }}" {
+    name = "{{ machine.address.name }}"
+    {% if machine.address.address_type %} address_type = "{{ machine.address.address_type }}"{% endif %}
+    {% if machine.address.subnetwork_name %} subnetwork = google_compute_subnetwork.{{ machine.address.subnetwork_name }}.id{% endif %}
+    {% if machine.address.address %} address = "{{ machine.address.address }}"{% endif %}
+    {% if machine.address.gcp_region %} region = "{{ machine.address.gcp_region }}"{% endif %}
+}
 
-    name = each.key
-    machine_type = each.value.gcp_type
-    zone = each.value.gcp_zone
+resource "google_compute_instance" "{{ machine.name }}" {
+
+    name = "{{ machine.name }}"
+    machine_type = "{{ machine.gcp_type }}"
+    zone = "{{ machine.gcp_zone }}"
     boot_disk {
         initialize_params {
-            image = each.value.disks.0.image
+            size = "{{ machine.disks[0].size }}"
+            image = "{{ machine.gcp_machine_image }}"
         }
     }
     network_interface {
-        network = each.value.gcp_network
+        network = "{{ machine.gcp_network }}"
         access_config {
-            nat_ip = google_compute_address.addr-front.address
+            nat_ip = google_compute_address.{{ machine.address.name }}.address
         }
     }
 
@@ -71,7 +72,10 @@ resource "google_compute_instance" "instances"{
           private_key = file(local.private_key_path)
           host        = self.network_interface.0.access_config.0.nat_ip
         }
+
+        inline = ["sudo apt-get install -y python-minimal python-setuptools"]
     }
 }
+{% endfor %}
 
 

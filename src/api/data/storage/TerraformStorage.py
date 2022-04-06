@@ -44,7 +44,7 @@ def store_terraform_infra(config: TerraformConfig):
         rendered_template = template.render(machines=config.machines, networks=config.networks,
                                             project_id=config.project_id, region=config.region,
                                             ssh_user=config.ssh_user,
-                                            private_key_path=f'./config/secrets/{config.private_key_name}')
+                                            private_key_path=f'../../secrets/{config.private_key_name}')
         # write to file
         f.write(rendered_template + '\n' + render_content_templates(config))
         f.close()
