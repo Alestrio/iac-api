@@ -30,7 +30,7 @@ class GCPProvider(Provider):
         super().__init__()
         # Open yaml config
         with open(self.config_file, 'r') as stream:
-            self.config = yaml.load(stream, Loader=yaml.FullLoader)
+            self.config = yaml.load(stream, Loader=yaml.FullLoader)[self.provider_key]
             self.project_id = self.config['project_id']
             self.zone = self.config['zone']
             self.serviceaccount_email = self.config['serviceaccount_email']
