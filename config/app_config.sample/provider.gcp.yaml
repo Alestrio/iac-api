@@ -1,0 +1,5 @@
+gcp:
+  project_id: a-project-id-65145
+  zone: us-central1-a
+  serviceaccount_email: serviceaccount@a-project-id-65145.iam.gserviceaccount.com
+  path_to_key: ./config/secrets/client_secret.json
