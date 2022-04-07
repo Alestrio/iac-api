@@ -1,6 +1,6 @@
 provider "google" {
     project = local.project_id
-    region = local.region
+    region = local.gcp_region
 }
 
 {% for net in networks %}
@@ -36,9 +36,10 @@ resource "google_compute_subnetwork" "{{subnet.name}}" {
     private_ip_google_access = "{{ subnet.private_ip_google_access }}"
 }
 {% endfor %}
-{% endfor %}
 
+{% endfor %}
 {% for machine in machines %}
+{% if 'gcp' in machine.providers %}
 resource "google_compute_address" "{{ machine.address.name }}" {
     name = "{{ machine.address.name }}"
     {% if machine.address.address_type %} address_type = "{{ machine.address.address_type }}"{% endif %}
@@ -59,7 +60,7 @@ resource "google_compute_instance" "{{ machine.name }}" {
         }
     }
     network_interface {
-        network = "{{ machine.gcp_network }}"
+        network = "{{ machine.gcp_network.name }}"
         access_config {
             nat_ip = google_compute_address.{{ machine.address.name }}.address
         }
@@ -76,6 +77,7 @@ resource "google_compute_instance" "{{ machine.name }}" {
         inline = ["sudo apt-get install -y python-minimal python-setuptools"]
     }
 }
+{% endif %}
 {% endfor %}
 
 
