@@ -7,6 +7,7 @@
 from fastapi import APIRouter
 
 from data.storage import TerraformStorage as storage
+from data.storage import AnsibleStorage as ansible_storage
 from models.TerraformConfig import TerraformConfig
 
 router = APIRouter(
@@ -45,4 +46,22 @@ async def delete_config(name: str):
     Delete a terraform infra config file.
     """
     return storage.delete_terraform_infra(name)
+
+
+@router.get("/ansible_config/roles")
+async def get_ansible_roles():
+    """
+    Get all ansible roles.
+    """
+    return ansible_storage.get_available_role_files()
+
+
+@router.get("/ansible_config/{name}")
+async def get_ansible_role(name: str):
+    """
+    Get an ansible playbook.
+    """
+    return ansible_storage.get_config(name)
+
+
 

@@ -1,0 +1,10 @@
+---
+- name: {{ config.name }}
+  hosts: {{ config.hosts }}
+  remote_user: {{ config.remote_user }}
+  become: {{ config.become }}
+
+  roles:
+    {% for role in config.roles %}
+    - {{ role }}
+    {% endfor %}
