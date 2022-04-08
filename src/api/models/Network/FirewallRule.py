@@ -14,3 +14,8 @@ class FirewallRule(BaseModel):
     is_allow: bool = True
     rules: Optional[list[Rule]] = None
     target_tags: list[str] = []
+
+    @staticmethod
+    def from_google_firewall(google_dict: dict):
+        # TODO - implement
+        pass
