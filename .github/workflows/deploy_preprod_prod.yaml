@@ -24,9 +24,11 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_IAC_CREDENTIALS }}
       - name: authenticate to gcr
-        run: |-
-          echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://europe-west1-docker.pkg.dev
-
+        uses: docker/login-action@v1
+        with:
+          registry: europe-west1-docker.pkg.dev # or REGION-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GOOGLE_IAC_CREDENTIALS }}
       - name: push to gcr
         run: |
           docker push europe-west1-docker.pkg.dev/environnement-de-test-329611/iac/api:latest
