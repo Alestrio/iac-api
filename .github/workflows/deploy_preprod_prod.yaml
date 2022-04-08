@@ -15,7 +15,7 @@ jobs:
           file: Dockerfile
           context: "{{defaultContext}}"
           push: false
-          tags: iac/api:latest
+          tags: europe-west1-docker.pkg.dev/environnement-de-test-329611/iac/api:latest
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GH_TOKEN }}
       - id: "auth"
