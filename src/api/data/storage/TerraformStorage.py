@@ -18,6 +18,7 @@ def render_content_templates(config: TerraformConfig):
     """
     templates = ['gcp', 'aws']
     content = ""
+    config.sanitize()
     for template in templates:
         with open(f'./templates/tf/{template}_content.tf.j2', 'r') as f:
             template = Template(f.read(), trim_blocks=True, lstrip_blocks=True)

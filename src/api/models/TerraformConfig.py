@@ -20,3 +20,15 @@ class TerraformConfig(BaseModel):
     private_key_name: str = "sample-key"
     machines: list[Machine]
     networks: list[Network]
+
+    def sanitize(self):
+        """
+        Sanitize the config to remove any invalid values
+        :return:
+        """
+        for net in self.networks:
+            net.name = net.name.replace(" ", "-").lower()
+
+        for machine in self.machines:
+            machine.name = machine.name.replace(" ", "-").lower()
+            machine.address.name = machine.address.name.replace(" ", "-").lower()
