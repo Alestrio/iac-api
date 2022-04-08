@@ -1,0 +1,43 @@
+name: Deploy api on machine
+
+on:
+  push:
+    branches:
+      - preprod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.10.0
+        with:
+          dockerfile: Dockerfile
+          context: .
+          push: false
+          tags: iac/api:latest
+      - id: auth
+        name: Authenticating to google cloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GOOGLE_IAC_CREDENTIALS }}
+      - name: authenticate to gcr
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io # or REGION-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+      - name: push to gcr
+        uses: docker/push-action@v1
+        with:
+          image: europe-west1-docker.pkg.dev/environnement-de-test-329611/iac/api
+          tag: latest
+
+#  deploy:
+#    runs-on: mahjopi-iac-back
+#    steps:
+#      - name: restarting the docker-compose
+#        run: |
+#          docker-compose down
+#          docker-compose up -d
+#        working-directory: /home/production/compose
