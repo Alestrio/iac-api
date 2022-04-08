@@ -1,0 +1,71 @@
+---
+- name: Creates "deploy" directory
+  file:
+    path: /deploy
+    state: directory
+
+- name: Copying git key
+  become: true
+  copy:
+    src: /home/esteban_dimier/.ssh/ed-git-key
+    dest: /home/esteban_dimier/.ssh/
+    owner: esteban_dimier
+    group: esteban_dimier
+    mode: 0644
+
+- name: Copying compose file
+  become: true
+  copy:
+    src: ./deploy/back/docker-compose.yml
+    dest: /deploy/
+    owner: esteban_dimier
+    group: esteban_dimier
+    mode: 0644
+
+- name: Copying nginx conf file
+  become: true
+  copy:
+    src: ./deploy/back/default
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Clone a github repository (Backend)
+  git:
+    repo: git@github.com:MahjoPi/pimahtic-backend.git
+    dest: /deploy/pimahtic-backend
+    clone: yes
+    update: yes
+    key_file: /home/esteban_dimier/.ssh/ed-git-key
+    accept_hostkey: yes
+
+- name: Environment variables (Backend) ...
+
+- name: Clone a github repository (AI)
+  git:
+    repo: git@github.com:MahjoPi/pimahtic-ai-data.git
+    dest: /deploy/pimahtic-ai-data
+    clone: yes
+    update: yes
+    key_file: /home/esteban_dimier/.ssh/ed-git-key
+    accept_hostkey: yes
+
+- name: Environment variables (AI) ...
+
+- name: Clone a github repository (Database dumper)
+  git:
+    repo: git@github.com:MahjoPi/pimahtic-mongodump.git
+    dest: /deploy/pimahtic-mongodump
+    clone: yes
+    update: yes
+    key_file: /home/esteban_dimier/.ssh/ed-git-key
+    accept_hostkey: yes
+
+- name: Environment variables (Database dumper) ...
+
+- name: Create and run containers
+  shell: |
+    cd /deploy
+    sudo docker-compose up --no-start
+    sudo docker-compose start

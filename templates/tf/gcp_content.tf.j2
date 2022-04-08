@@ -42,10 +42,14 @@ resource "google_compute_subnetwork" "{{subnet.name}}" {
 {% if 'gcp' in machine.providers %}
 resource "google_compute_address" "{{ machine.address.name }}" {
     name = "{{ machine.address.name }}"
-    {% if machine.address.address_type %} address_type = "{{ machine.address.address_type }}"{% endif %}
-    {% if machine.address.subnetwork_name %} subnetwork = google_compute_subnetwork.{{ machine.address.subnetwork_name }}.id{% endif %}
-    {% if machine.address.address %} address = "{{ machine.address.address }}"{% endif %}
-    {% if machine.address.gcp_region %} region = "{{ machine.address.gcp_region }}"{% endif %}
+    {% if machine.address.address_type %}    address_type = "{{ machine.address.address_type }}"
+    {% endif %}
+    {% if machine.address.subnetwork_name %}     subnetwork = google_compute_subnetwork.{{ machine.address.subnetwork_name }}.id
+    {% endif %}
+    {% if machine.address.address %}    address = "{{ machine.address.address }}"
+    {% endif %}
+    {% if machine.address.gcp_region %}     region = "{{ machine.address.gcp_region }}"
+    {% endif %}
 }
 
 resource "google_compute_instance" "{{ machine.name }}" {
