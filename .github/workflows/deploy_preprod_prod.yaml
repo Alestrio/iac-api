@@ -16,6 +16,8 @@ jobs:
           context: "{{defaultContext}}"
           push: false
           tags: iac/api:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GH_TOKEN }}
       - id: auth
         name: Authenticating to google cloud
         uses: google-github-actions/auth@v0
