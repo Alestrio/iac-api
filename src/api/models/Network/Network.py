@@ -42,3 +42,18 @@ class Network(BaseModel):
             firewall_rules=list(firewalls),
             #mtu=int(response["mtu"])
         )
+
+    @staticmethod
+    def from_aws_network(networks, **kwargs):
+        nets = []
+        for network in networks:
+            nets.append(Network(
+                id=network.id,
+                name=network.description,
+                subnet=Subnetwork.from_aws_network(network.id, **kwargs),
+                firewall_rules=FirewallRule.from_aws_firewall(network.groups, **kwargs)
+            ))
+        return nets
+
+
+

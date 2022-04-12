@@ -22,3 +22,10 @@ class Address(BaseModel):
             address_type=google_dict["type"],
             address=google_dict["natIP"] if "natIP" in google_dict else None,
         )
+
+    @staticmethod
+    def from_aws_address(response):
+        return Address(
+            name='default',
+            address=response
+        )

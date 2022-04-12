@@ -12,5 +12,6 @@ class Rule(BaseModel):
     A rule is a simple instruction to deny or allow traffic on a network port
     """
     protocol: str = "tcp"
-    ports: list[int] = [80]
+    from_ports: list[int] = [80]
+    to_ports: list[int] = [80]
     source_networks: list[str] = ["0.0.0.0/0"]
