@@ -3,3 +3,6 @@
 config/secrets/
 src/api/__pycache__/
 config/app_config/
+*.pyc
+
+config/terraform_configs/
