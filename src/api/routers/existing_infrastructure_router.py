@@ -7,7 +7,7 @@ import json
 
 from fastapi import APIRouter
 
-from data.providers import AWSProvider
+from data.providers.AWSProvider import AWSProvider
 from data.providers.GCPProvider import GCPProvider
 
 router = APIRouter(
