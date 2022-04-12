@@ -49,7 +49,7 @@ class AWSProvider(Provider):
                         address=Address.from_aws_address(instance.public_ip_address),
                         disks=Disk.from_aws_disk(instance.block_device_mappings, **self.config_dict))
             )
-        print(machines)
+        return machines
 
     def get_deployed_networks(self):
         pass
