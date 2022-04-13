@@ -1,0 +1,5 @@
+aws:
+  zone: eu-west-3
+  project_id: abcd
+  access_key: defg
+  secret_key: hijk
