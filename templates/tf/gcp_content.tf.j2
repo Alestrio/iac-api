@@ -1,6 +1,7 @@
 provider "google" {
     project = local.project_id
     region = local.gcp_region
+    credentials = "${file("../../../config/secrets/client_secret.json")}"
 }
 
 {% for net in networks %}
@@ -13,10 +14,11 @@ resource "google_compute_network" "{{net.name}}" {
 resource "google_compute_firewall" "{{firewall.name}}" {
     name = "{{firewall.name}}"
     network = "{{ net.name }}"
+    source_ranges = {{ firewall.sranges | tojson}}
 {#  allow or deny => class name to lower case #}
 {% for rule in firewall.rules %}
         {{ "allow" if firewall.is_allow else "deny" }} {
-            ports = {{ rule.ports }}
+            ports = {{ rule.to_ports }}
             protocol = "{{ rule.protocol }}"
         }
 {% endfor %}
@@ -61,10 +63,11 @@ resource "google_compute_instance" "{{ machine.name }}" {
         initialize_params {
             size = "{{ machine.disks[0].size }}"
             image = "{{ machine.gcp_machine_image }}"
+            name = "{{ machine.name if machine.disks[0].name == "" else machine.disks[0].name }}"
         }
     }
     network_interface {
-        network = "{{ machine.gcp_network.name }}"
+        network = "{{ machine.gcp_network.name if machine.gcp_network.name else machine.gcp_network }}"
         access_config {
             nat_ip = google_compute_address.{{ machine.address.name }}.address
         }

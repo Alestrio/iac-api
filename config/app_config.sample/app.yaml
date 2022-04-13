@@ -1,0 +1,5 @@
+mongo_addr: localhost
+mongo_port: '27017'
+mongo_user: admin
+mongo_pass: admin
+mongo_db_name: iac
