@@ -4,6 +4,7 @@
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
 import os
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -19,7 +20,8 @@ class TerraformConfig(BaseModel):
     ssh_user: str = "ubuntu"
     private_key_name: str = "sample-key"
     machines: list[Machine]
-    networks: list[Network]
+    networks: Optional[list[Network]] = None
+    roles: list[str] = []
 
     def sanitize(self):
         """

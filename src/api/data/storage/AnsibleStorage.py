@@ -6,6 +6,9 @@
 import os
 
 import yaml
+from jinja2 import Template
+
+from models.AnsibleConfig import AnsibleConfig
 
 
 def get_available_role_files():
@@ -16,15 +19,31 @@ def get_available_role_files():
     return os.listdir("./config/ansible_configs/roles")
 
 
-def save_ansible_playbook(playbook_name, playbook_content):
+def render_content_templates(config: AnsibleConfig):
     """
-    Save an ansible playbook to the filesystem
-    :param playbook_name: name of the playbook
-    :param playbook_content: content of the playbook
+    Renders the content templates for the given config.
+
+    :param config: the config to render
     :return: None
     """
-    with open(os.path.join(os.path.dirname(__file__), "../../ansible_configs/{}.yaml".format(playbook_name)), "w") as playbook_file:
-        playbook_file.write(playbook_content)
+    content = ""
+    with open(f'./templates/ansible_config.yaml.j2', 'r') as f:
+        template = Template(f.read(), trim_blocks=True, lstrip_blocks=True)
+        rendered_template = template.render(config=config)
+        content += rendered_template
+    return content
+
+
+def save_ansible_playbook(config: AnsibleConfig):
+    """
+    Save an ansible playbook to the filesystem
+    :param config:
+    :param playbook_name: name of the playbook
+    :return: None
+    """
+    with open(os.path.join(os.path.dirname(__file__), "../../ansible_configs/{}.yaml".format(config.name)), "w") as playbook_file:
+        # Open the template file generate
+        playbook_file.write(render_content_templates(config))
 
 
 def get_config(name):

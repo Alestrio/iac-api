@@ -1,8 +1,8 @@
 ---
 - name: {{ config.name }}
-  hosts: {{ config.hosts }}
-  remote_user: {{ config.remote_user }}
-  become: {{ config.become }}
+  hosts: all
+  remote_user: ubuntu
+  become: yes
 
   roles:
     {% for role in config.roles %}

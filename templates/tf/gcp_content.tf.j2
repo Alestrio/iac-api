@@ -63,10 +63,11 @@ resource "google_compute_instance" "{{ machine.name }}" {
         initialize_params {
             size = "{{ machine.disks[0].size }}"
             image = "{{ machine.gcp_machine_image }}"
+            name = "{{ machine.name if machine.disks[0].name == "" else machine.disks[0].name }}"
         }
     }
     network_interface {
-        network = "{{ machine.gcp_network.name if machine.gcp_network.name else  machine.gcp_network }}"
+        network = "{{ machine.gcp_network.name if machine.gcp_network.name else machine.gcp_network }}"
         access_config {
             nat_ip = google_compute_address.{{ machine.address.name }}.address
         }

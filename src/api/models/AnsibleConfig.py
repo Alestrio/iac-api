@@ -12,9 +12,6 @@ from pydantic import BaseModel
 class AnsibleConfig(BaseModel):
     name: str
     roles: list[str]
-    hosts: list[Union[str, dict]]
-    remote_user: str
-    become: bool
 
     def to_yaml(self):
         """
