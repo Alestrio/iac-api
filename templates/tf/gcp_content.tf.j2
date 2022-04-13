@@ -60,10 +60,10 @@ resource "google_compute_instance" "{{ machine.name }}" {
     machine_type = "{{ machine.gcp_type }}"
     zone = "{{ machine.gcp_zone }}"
     boot_disk {
+        device_name = "{{ machine.name if machine.disks[0].name == "" else machine.disks[0].name }}"
         initialize_params {
             size = "{{ machine.disks[0].size }}"
             image = "{{ machine.gcp_machine_image }}"
-            name = "{{ machine.name if machine.disks[0].name == "" else machine.disks[0].name }}"
         }
     }
     network_interface {
@@ -82,6 +82,9 @@ resource "google_compute_instance" "{{ machine.name }}" {
         }
 
         inline = ["sudo apt-get install -y python-minimal python-setuptools"]
+    }
+    provisioner "local-exec" {
+        command = "ansible-playbook -i ${self.network_interface.0.access_config.0.nat_ip} --private-key ${local.private_key_path} ../ansible_configs/{{ config_name }}.yaml"
     }
 }
 {% endif %}

@@ -36,7 +36,7 @@ class Machine(BaseModel):
     memory: int = 0
     gcp_type: Optional[str] = "e2-micro"
     aws_type: Optional[str] = "t2.micro"
-    gcp_machine_image: str = "debian-10-buster"
+    gcp_machine_image: str = "debian-10-buster-v20220310"
     aws_machine_image: str = "ami-0f9c9d7f2b6c8f9d6"
     gcp_zone: str = "europe-west1-b"
     aws_zone: str = "eu-west-1a"
