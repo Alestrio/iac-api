@@ -15,6 +15,7 @@ class FirewallRule(BaseModel):
     name: Optional[str]
     is_allow: bool = True
     rules: Optional[list[Rule]] = None
+    sranges: list[str] = ["0.0.0.0/0"]
     target_tags: list[str] = []
 
     @staticmethod

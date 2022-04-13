@@ -1,6 +1,8 @@
+{% for i in machines if 'aws' in i.providers %}
 provider "aws" {
     region = local.aws_region
 }
+{% endfor %}
 
 {% for machine in machines %}
 {% if 'aws' in machine.providers %}
