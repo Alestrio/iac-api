@@ -89,10 +89,6 @@ class GCPProvider(Provider):
         return Disk.from_google_disk(response)
 
     def get_simple_machines(self):
-        """
-
-        :return:
-        """
         request = self.compute.instances().list(project=self.project_id, zone=self.zone)
         response = request.execute()
         machines = list[Machine]()
