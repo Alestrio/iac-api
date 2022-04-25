@@ -64,7 +64,8 @@ class AWSProvider(Provider):
             machine = SimplifiedMachine(name=instance.tags[0]['Value'] if instance.tags else None,
                                         type=instance.instance_type,
                                         zone=instance.placement['AvailabilityZone'],
-                                        disks_number=len(instance.block_device_mappings))
+                                        disks_number=len(instance.block_device_mappings),
+                                        os=ec2.Image(instance.image_id).name)
             machine.translateType()
             machines.append(machine)
         return machines

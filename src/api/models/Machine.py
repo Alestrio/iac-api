@@ -56,6 +56,7 @@ class SimplifiedMachine(BaseModel):
     type: str = "e2-micro"
     zone: str = "europe-west1-b"
     disks_number: int = 0
+    os: str = "debian-10-buster-v20220310"
 
     def translateType(self):
         translateMachineType(self)

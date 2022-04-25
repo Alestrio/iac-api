@@ -94,7 +94,8 @@ class GCPProvider(Provider):
         machines = list[Machine]()
         for i in response['items']:
             machine = SimplifiedMachine(name=i['name'], type=i['machineType'].split('/')[-1],
-                                        zone=self.zone, disks_number=len(i['disks']))
+                                        zone=self.zone, disks_number=len(i['disks']),
+                                        os=i['disks'][0]['licenses'][0].split('/')[-1])
             machine.translateType()
             machines.append(machine.dict())
         return machines
