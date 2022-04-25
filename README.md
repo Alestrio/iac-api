@@ -11,6 +11,8 @@ Start by executing : `pip install -r requirements.txt`
 
 You can then launch the server by executing the file api_run.py
 
+The app must be run from the iac-api context folder.
+
 ## Installation via docker-compose
 
 To install the project on a production :
@@ -45,22 +47,6 @@ services:
             - /var/traefik/:/etc/traefik/
             # path to docker socket
             - /var/run/docker.sock:/var/run/docker.sock
-        networks:
-            - backend:
-    terraform:
-        image: hashicorp/terraform:latest
-        container_name: terraform
-        restart: always
-        volumes:
-            - /var/terraform/:/home/terraform/
-        networks:
-            - backend:
-    ansible:
-        image: ansible/ansible:latest
-        container_name: ansible
-        restart: always
-        volumes:
-            - /var/ansible/:/home/ansible/
         networks:
             - backend:
 

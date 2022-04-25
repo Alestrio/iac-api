@@ -15,7 +15,7 @@ from googleapiclient import discovery
 from google.oauth2 import service_account
 
 from models.Disk import Disk
-from models.Machine import Machine
+from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
 from models.Network.FirewallRule import FirewallRule
 from models.Network.Network import Network
@@ -87,6 +87,18 @@ class GCPProvider(Provider):
         request = self.compute.disks().get(project=self.project_id, zone=self.zone, disk=name)
         response = request.execute()
         return Disk.from_google_disk(response)
+
+    def get_simple_machines(self):
+        request = self.compute.instances().list(project=self.project_id, zone=self.zone)
+        response = request.execute()
+        machines = list[Machine]()
+        for i in response['items']:
+            machine = SimplifiedMachine(name=i['name'], type=i['machineType'].split('/')[-1],
+                                        zone=self.zone, disks_number=len(i['disks']))
+            machine.translateType()
+            machines.append(machine.dict())
+        return machines
+
 
 
 if __name__ == '__main__':

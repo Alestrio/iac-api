@@ -38,3 +38,11 @@ class Provider:
         :return: list[Machine]
         """
         pass
+
+    @abstractmethod
+    def get_simple_machines(self):
+        """
+        Returns a list of machines that are available on the provider
+        :return: list[SimpleMachine]
+        """
+        pass

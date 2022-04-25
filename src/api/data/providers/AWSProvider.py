@@ -9,7 +9,7 @@ from data.providers.Provider import Provider
 import boto3
 
 from models.Disk import Disk
-from models.Machine import Machine
+from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
 from models.Network.Network import Network
 
@@ -53,6 +53,21 @@ class AWSProvider(Provider):
 
     def get_deployed_networks(self):
         pass
+
+    def get_simple_machines(self):
+        ec2 = boto3.resource('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
+                             aws_secret_access_key=self.config['secret_key'])
+        # Get all instances
+        instances = ec2.instances.all()
+        machines = []
+        for instance in instances:
+            machine = SimplifiedMachine(name=instance.tags[0]['Value'] if instance.tags else None,
+                                        type=instance.instance_type,
+                                        zone=instance.placement['AvailabilityZone'],
+                                        disks_number=len(instance.block_device_mappings))
+            machine.translateType()
+            machines.append(machine)
+        return machines
 
 
 if __name__ == '__main__':
