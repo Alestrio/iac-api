@@ -41,7 +41,7 @@ def save_ansible_playbook(config: AnsibleConfig):
     :param playbook_name: name of the playbook
     :return: None
     """
-    with open(os.path.join(os.path.dirname(__file__), "../../ansible_configs/{}.yaml".format(config.name)), "w") as playbook_file:
+    with open("./config/ansible_configs/{}.yaml".format(config.name), "w") as playbook_file:
         # Open the template file generate
         playbook_file.write(render_content_templates(config))
 

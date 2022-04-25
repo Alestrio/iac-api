@@ -30,3 +30,11 @@ class Provider:
         :return: list[Network]
         """
         pass
+
+    @abstractmethod
+    def get_machines(self):
+        """
+        Returns a list of machines that are available on the provider
+        :return: list[Machine]
+        """
+        pass

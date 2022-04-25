@@ -8,6 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from data.storage import AnsibleStorage
 from models.Machine import Machine
 from models.Network.Network import Network
 
@@ -34,3 +35,7 @@ class TerraformConfig(BaseModel):
         for machine in self.machines:
             machine.name = machine.name.replace(" ", "-").lower()
             machine.address.name = machine.address.name.replace(" ", "-").lower()
+
+        for role in self.roles:
+            if role not in AnsibleStorage.get_available_role_files():
+                self.roles.remove(role)

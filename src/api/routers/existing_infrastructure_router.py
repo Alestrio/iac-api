@@ -40,3 +40,16 @@ async def get_existing_infrastructure(provider: str):
     provider = provider_instance
     machines = provider.get_deployed_instances()
     return machines
+
+
+@router.get("/machines/{provider}")
+async def get_existing_machines(provider: str):
+    """
+    Get existing machines
+    """
+    provider = providers.get(provider)
+    # instantiate the provider
+    provider_instance = provider()
+    provider = provider_instance
+    machines = provider.get_machines()
+    return machines
