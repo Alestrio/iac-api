@@ -54,6 +54,7 @@ async def get_existing_machines(provider: str):
     machines = provider.get_machines()
     return machines
 
+
 @router.get("/simple_machines/{provider}")
 async def get_existing_simple_machines(provider: str):
     """
@@ -65,3 +66,16 @@ async def get_existing_simple_machines(provider: str):
     provider = provider_instance
     machines = provider.get_simple_machines()
     return machines
+
+
+@router.get("/simple_networks/{provider}")
+async def get_existing_simple_networks(provider: str):
+    """
+    Get existing networks
+    """
+    provider = providers.get(provider)
+    # instantiate the provider
+    provider_instance = provider()
+    provider = provider_instance
+    networks = provider.get_simple_networks()
+    return networks

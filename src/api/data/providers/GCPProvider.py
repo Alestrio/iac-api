@@ -3,10 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
-from pprint import pprint
-
-import oauth2client
-from pydantic import json
+from beaker.cache import cache_regions, cache_region
 
 from data.providers.Provider import Provider
 import yaml
@@ -18,8 +15,8 @@ from models.Disk import Disk
 from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
 from models.Network.FirewallRule import FirewallRule
-from models.Network.Network import Network
-from models.Network.Subnetwork import Subnetwork
+from models.Network.Network import Network, SimplifiedNetwork
+from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
 
 class GCPProvider(Provider):
@@ -38,6 +35,14 @@ class GCPProvider(Provider):
 
         self.credentials = service_account.Credentials.from_service_account_file(self.path_to_key)
         self.compute = discovery.build('compute', 'v1', credentials=self.credentials)
+
+        cache_regions.update({
+                'api_data': {
+                    'type': 'memory',
+                    'expire': 60 * 60 * 1,  # 1h
+                    'key_length': 250
+                }
+            })
 
     def get_deployed_instances(self):
         """
@@ -100,11 +105,44 @@ class GCPProvider(Provider):
             machines.append(machine.dict())
         return machines
 
+    @cache_region('api_data')
+    def __get_subnetworks(self, j):
+        request = self.compute.subnetworks().get(project=self.project_id, subnetwork=j.split('/')[-1],
+                                                 region=self.zone[:-2])
+        response = request.execute()
+        return response
+
+    def get_simple_networks(self):
+        request = self.compute.networks().list(project=self.project_id)
+        response = request.execute()
+        networks = list[Network]()
+        for i in response['items']:
+            if self.zone[-1] != i['selfLink'].split('/')[-1] or i['selfLink'].split('/')[-2] == 'global':
+                subnets = []
+                for j in i['subnetworks']:
+                    if j.split('/')[-3] == self.zone[:-2]:
+                        response = self.__get_subnetworks(j)
+                        subnet = Subnetwork.from_google_subnetwork(response)
+                        simple_subnet = SimplifiedSubnetwork.from_subnetwork(subnet)
+                        subnets.append(simple_subnet.dict())
+                firewall_requests = self.compute.firewalls().list(project=self.project_id)
+                firewall_response = firewall_requests.execute()
+                rules = []
+                for k in firewall_response['items']:
+                    if k['network'].split('/')[-1] == i['name']:
+                        rules.append(FirewallRule.from_google_rule(k))
+                firewall = FirewallRule(rules=rules, name=i['name'], is_allow=True)
+                network = SimplifiedNetwork(name=i['name'], zone=self.zone,
+                                            subnets=subnets, description=i['description'] if 'description' in i else '',
+                                            firewall_rules=[firewall])
+
+                networks.append(network.dict())
+        return networks
 
 
 if __name__ == '__main__':
     import time
     start = time.time()
     provider = GCPProvider()
-    print(provider.get_deployed_instances())
+    print(provider.get_simple_networks())
     print(time.time() - start)
