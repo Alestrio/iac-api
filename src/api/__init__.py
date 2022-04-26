@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from routers import config_router, existing_infrastructure_router, auth_router, deploy_router
+from routers import config_router, existing_infrastructure_router, auth_router, deploy_router, settings_router
 
 app = FastAPI()
 
@@ -29,4 +29,5 @@ app.add_middleware(
 app.include_router(config_router.router)
 app.include_router(existing_infrastructure_router.router)
 app.include_router(deploy_router.router)
+app.include_router(settings_router.router)
 app.include_router(auth_router.router)

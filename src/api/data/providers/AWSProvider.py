@@ -123,6 +123,20 @@ class AWSProvider(Provider):
         print(networks)
         return networks
 
+    @staticmethod
+    def set_zone(zone):
+        available_zones = []
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            for i in config['aws']['available_zones']:
+                available_zones.append(i)
+        if zone not in available_zones:
+            raise ValueError('Zone not available')
+        else:
+            with open("./config/app_config/provider.aws.yaml", 'w') as f:
+                config['aws']['zone'] = zone
+                yaml.dump(config, f)
+        return
 
 
 

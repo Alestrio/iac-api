@@ -139,6 +139,21 @@ class GCPProvider(Provider):
                 networks.append(network.dict())
         return networks
 
+    @staticmethod
+    def set_zone(zone):
+        available_zones = []
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            for i in config['gcp']['available_zones']:
+                available_zones.append(i)
+        if zone not in available_zones:
+            raise ValueError('Zone not available')
+        else:
+            with open("./config/app_config/provider.gcp.yaml", 'w') as f:
+                config['gcp']['zone'] = zone
+                yaml.dump(config, f)
+        return
+
 
 if __name__ == '__main__':
     import time

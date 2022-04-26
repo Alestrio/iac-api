@@ -46,3 +46,12 @@ class Provider:
         :return: list[SimpleMachine]
         """
         pass
+
+    @staticmethod
+    def set_zone(zone):
+        """
+        Sets the zone for the provider
+        :param zone:
+        :return:
+        """
+        pass
