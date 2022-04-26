@@ -15,7 +15,6 @@ from models.Network.FirewallRule import FirewallRule
 class Subnetwork(BaseModel):
     id: Optional[str]
     name: str
-    network_name: str
     providers: list[str] = ['gcp']
     ip_cidr_range: Optional[str]
     gcp_region: Optional[str]
@@ -55,7 +54,6 @@ class SimplifiedSubnetwork(BaseModel):
     subnetwork_name: str
     ip_cidr_range: str
     region: str
-    firewall_rules: list[FirewallRule] = []
 
     @staticmethod
     def from_subnetwork(subnet):

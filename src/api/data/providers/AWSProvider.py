@@ -11,7 +11,10 @@ import boto3
 from models.Disk import Disk
 from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
-from models.Network.Network import Network
+from models.Network.FirewallRule import FirewallRule
+from models.Network.Network import Network, SimplifiedNetwork
+from models.Network.Rule import Rule
+from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
 
 class AWSProvider(Provider):
@@ -73,7 +76,57 @@ class AWSProvider(Provider):
             machines.append(machine)
         return machines
 
+    def get_simple_networks(self):
+        client = boto3.client('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
+                              aws_secret_access_key=self.config['secret_key'])
+        networks = []
+        for vpc in client.describe_vpcs()['Vpcs']:
+            # Fetches all subnets in the vpc
+            subns = []
+            subnets = client.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc['VpcId']]}])['Subnets']
+            for subnet in subnets:
+                subns.append(
+                    SimplifiedSubnetwork(
+                        name=subnet['SubnetId'],
+                        subnetwork_name=subnet['SubnetId'],
+                        ip_cidr_range=subnet['CidrBlock'],
+                        region=subnet['AvailabilityZone'][:-1],
+                     )
+                )
+            firewalls = []
+            for firewall in client.describe_security_groups(
+                    Filters=[{'Name': 'vpc-id', 'Values': [vpc['VpcId']]}])['SecurityGroups']:
+                for rule in firewall['IpPermissions']:
+                    firewalls.append(
+                        Rule(
+                            protocol=rule['IpProtocol'],
+                            from_ports=[rule['FromPort']] if 'FromPort' in rule else [-1],
+                            to_ports=[rule['ToPort']] if 'ToPort' in rule else [-1],
+                            source_networks=rule['IpPermissionsEgress'] if 'IpPermissionsEgress' in rule else ['0.0.0.0/0'],
+                        )
+                    )
+                firewalls.append(FirewallRule(
+                    name=firewall['GroupName'],
+                    is_allow=True,
+                    rules=firewalls
+                ))
+            print(vpc)
+            networks.append(
+                SimplifiedNetwork(
+                    name=vpc['VpcId'],
+                    subnets=subns,
+                    zone=self.zone,
+                    description='None',
+                    firewall_rules=firewalls
+                )
+            )
+        print(networks)
+        return networks
+
+
+
+
 
 if __name__ == '__main__':
     provider = AWSProvider()
-    provider.get_deployed_instances()
+    provider.get_simple_networks()
