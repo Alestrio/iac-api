@@ -55,3 +55,11 @@ class Provider:
         :return:
         """
         pass
+
+    @staticmethod
+    def get_zone():
+        """
+        Returns the zone for the provider
+        :return:
+        """
+        pass

@@ -138,6 +138,12 @@ class AWSProvider(Provider):
                 yaml.dump(config, f)
         return
 
+    @staticmethod
+    def get_zone():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['zone']
+
 
 
 

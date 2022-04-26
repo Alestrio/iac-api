@@ -40,3 +40,14 @@ async def set_region(provider: str, zone: str):
     return {"message": "Region set"}
 
 
+@router.get("/region/{provider}")
+async def get_region(provider: str):
+    """
+    Get the region for a provider
+    """
+    provider = providers.get(provider)
+    # instantiate the provider
+    provider_instance = provider()
+    provider = provider_instance
+    # get the region
+    return {"zone": provider.get_zone()}

@@ -154,6 +154,12 @@ class GCPProvider(Provider):
                 yaml.dump(config, f)
         return
 
+    @staticmethod
+    def get_zone():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['zone']
+
 
 if __name__ == '__main__':
     import time
