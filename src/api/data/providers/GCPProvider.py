@@ -108,7 +108,7 @@ class GCPProvider(Provider):
     @cache_region('api_data')
     def __get_subnetworks(self, j):
         request = self.compute.subnetworks().get(project=self.project_id, subnetwork=j.split('/')[-1],
-                                                 region=j.split('/')[-3])
+                                                 region=self.zone[:-2])
         response = request.execute()
         return response
 
@@ -117,24 +117,26 @@ class GCPProvider(Provider):
         response = request.execute()
         networks = list[Network]()
         for i in response['items']:
-            subnets = []
-            for j in i['subnetworks']:
-                response = self.__get_subnetworks(j)
-                subnet = Subnetwork.from_google_subnetwork(response)
-                simple_subnet = SimplifiedSubnetwork.from_subnetwork(subnet)
-                subnets.append(simple_subnet.dict())
-            firewall_requests = self.compute.firewalls().list(project=self.project_id)
-            firewall_response = firewall_requests.execute()
-            rules = []
-            for k in firewall_response['items']:
-                if k['network'].split('/')[-1] == i['name']:
-                    rules.append(FirewallRule.from_google_rule(k))
-            firewall = FirewallRule(rules=rules, name=i['name'], is_allow=True)
-            network = SimplifiedNetwork(name=i['name'], zone=self.zone,
-                                        subnets=subnets, description=i['description'] if 'description' in i else '',
-                                        firewall_rules=[firewall])
+            if self.zone[-1] != i['selfLink'].split('/')[-1] or i['selfLink'].split('/')[-2] == 'global':
+                subnets = []
+                for j in i['subnetworks']:
+                    if j.split('/')[-3] == self.zone[:-2]:
+                        response = self.__get_subnetworks(j)
+                        subnet = Subnetwork.from_google_subnetwork(response)
+                        simple_subnet = SimplifiedSubnetwork.from_subnetwork(subnet)
+                        subnets.append(simple_subnet.dict())
+                firewall_requests = self.compute.firewalls().list(project=self.project_id)
+                firewall_response = firewall_requests.execute()
+                rules = []
+                for k in firewall_response['items']:
+                    if k['network'].split('/')[-1] == i['name']:
+                        rules.append(FirewallRule.from_google_rule(k))
+                firewall = FirewallRule(rules=rules, name=i['name'], is_allow=True)
+                network = SimplifiedNetwork(name=i['name'], zone=self.zone,
+                                            subnets=subnets, description=i['description'] if 'description' in i else '',
+                                            firewall_rules=[firewall])
 
-            networks.append(network.dict())
+                networks.append(network.dict())
         return networks
 
 

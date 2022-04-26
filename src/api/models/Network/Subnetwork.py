@@ -51,7 +51,6 @@ class Subnetwork(BaseModel):
 
 class SimplifiedSubnetwork(BaseModel):
     name: str
-    subnetwork_name: str
     ip_cidr_range: str
     region: str
 
@@ -59,7 +58,6 @@ class SimplifiedSubnetwork(BaseModel):
     def from_subnetwork(subnet):
         return SimplifiedSubnetwork(
             name=subnet.name,
-            subnetwork_name=subnet.network_name,
             ip_cidr_range=subnet.ip_cidr_range,
             region=subnet.gcp_region,
         )
