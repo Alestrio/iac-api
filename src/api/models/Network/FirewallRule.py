@@ -15,13 +15,6 @@ class FirewallRule(BaseModel):
     name: Optional[str]
     is_allow: bool = True
     rules: Optional[list[Rule]] = None
-    sranges: list[str] = ["0.0.0.0/0"]
-    target_tags: list[str] = []
-
-    @staticmethod
-    def from_google_firewall(google_dict: dict):
-        # TODO - implement
-        pass
 
     @staticmethod
     def from_aws_firewall(groups, **kwargs):
@@ -45,3 +38,13 @@ class FirewallRule(BaseModel):
             rules=rs,
             target_tags=[]
         )]
+
+    @staticmethod
+    def from_google_rule(rule):
+        trule = Rule()
+        if 'allowed' in rule:
+            trule.protocol = rule['allowed'][0]['IPProtocol']
+            trule.from_ports = rule['allowed'][0].get('ports')
+            trule.to_ports = rule['allowed'][0].get('ports')
+        trule.source_networks = rule['sourceRanges']
+        return(trule)

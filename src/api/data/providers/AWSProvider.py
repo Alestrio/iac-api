@@ -15,6 +15,9 @@ from models.Network.Network import Network
 
 
 class AWSProvider(Provider):
+    def get_machines(self):
+        pass
+
     provider_key = "aws"
     config_file = f"./config/app_config/provider.{provider_key}.yaml"
 

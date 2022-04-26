@@ -3,6 +3,8 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+from typing import Union
+
 from pydantic.main import BaseModel
 
 
@@ -12,6 +14,6 @@ class Rule(BaseModel):
     A rule is a simple instruction to deny or allow traffic on a network port
     """
     protocol: str = "tcp"
-    from_ports: list[int] = [80]
-    to_ports: list[int] = [80]
+    from_ports: list[Union[int, str]] = []
+    to_ports: list[Union[int, str]] = []
     source_networks: list[str] = ["0.0.0.0/0"]

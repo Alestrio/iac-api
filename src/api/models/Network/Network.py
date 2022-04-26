@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from models.Network.FirewallRule import FirewallRule
-from models.Network.Subnetwork import Subnetwork
+from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
 
 class Network(BaseModel):
@@ -22,7 +22,6 @@ class Network(BaseModel):
     aws_zone: str = "eu-west-1"
     subnet: Optional[Subnetwork] = None
     description: str = "network"
-    firewall_rules: list[FirewallRule]
     routing_type: str = "static"
     mtu: int = 1500
 
@@ -54,6 +53,14 @@ class Network(BaseModel):
                 firewall_rules=FirewallRule.from_aws_firewall(network.groups, **kwargs)
             ))
         return nets
+
+
+class SimplifiedNetwork(BaseModel):
+    name: str
+    zone: str
+    subnets: list[SimplifiedSubnetwork] = []
+    description: str = "network"
+    firewall_rules: Optional[list[FirewallRule]] = None
 
 
 

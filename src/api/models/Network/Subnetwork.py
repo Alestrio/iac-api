@@ -6,7 +6,10 @@
 from typing import Optional
 
 import boto3
+import requests
 from pydantic import BaseModel
+
+from models.Network.FirewallRule import FirewallRule
 
 
 class Subnetwork(BaseModel):
@@ -21,10 +24,11 @@ class Subnetwork(BaseModel):
     @staticmethod
     def from_google_subnetwork(google_dict):
         """
-
+        :param firewall_rules:
         :param google_dict:
         :return:
         """
+        #print(google_dict)
         return Subnetwork(
             name=google_dict['name'],
             network_name=google_dict['network'].split('/')[-1],
@@ -43,4 +47,21 @@ class Subnetwork(BaseModel):
             network_name=interface.description,
             ip_cidr_range=interface.subnet.cidr_block,
             aws_region=interface.subnet.availability_zone.split('-')[-1],
+        )
+
+
+class SimplifiedSubnetwork(BaseModel):
+    name: str
+    subnetwork_name: str
+    ip_cidr_range: str
+    region: str
+    firewall_rules: list[FirewallRule] = []
+
+    @staticmethod
+    def from_subnetwork(subnet):
+        return SimplifiedSubnetwork(
+            name=subnet.name,
+            subnetwork_name=subnet.network_name,
+            ip_cidr_range=subnet.ip_cidr_range,
+            region=subnet.gcp_region,
         )
