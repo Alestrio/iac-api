@@ -93,6 +93,7 @@ class GCPProvider(Provider):
         response = request.execute()
         return Disk.from_google_disk(response)
 
+    @cache_region('api_data')
     def get_simple_machines(self):
         request = self.compute.instances().list(project=self.project_id, zone=self.zone)
         response = request.execute()
@@ -138,6 +139,27 @@ class GCPProvider(Provider):
 
                 networks.append(network.dict())
         return networks
+
+    @staticmethod
+    def set_zone(zone):
+        available_zones = []
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            for i in config['gcp']['available_zones']:
+                available_zones.append(i)
+        if zone not in available_zones:
+            raise ValueError('Zone not available')
+        else:
+            with open("./config/app_config/provider.gcp.yaml", 'w') as f:
+                config['gcp']['zone'] = zone
+                yaml.dump(config, f)
+        return
+
+    @staticmethod
+    def get_zone():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['zone']
 
 
 if __name__ == '__main__':
