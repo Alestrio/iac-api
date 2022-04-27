@@ -98,12 +98,15 @@ class GCPProvider(Provider):
         request = self.compute.instances().list(project=self.project_id, zone=self.zone)
         response = request.execute()
         machines = list[Machine]()
-        for i in response['items']:
-            machine = SimplifiedMachine(name=i['name'], type=i['machineType'].split('/')[-1],
-                                        zone=self.zone, disks_number=len(i['disks']),
-                                        os=i['disks'][0]['licenses'][0].split('/')[-1])
-            machine.translateType()
-            machines.append(machine.dict())
+        if 'items' in response:
+            for i in response['items']:
+                machine = SimplifiedMachine(name=i['name'], type=i['machineType'].split('/')[-1],
+                                            zone=self.zone, disks_number=len(i['disks']),
+                                            os=i['disks'][0]['licenses'][0].split('/')[-1])
+                machine.translateType()
+                machines.append(machine.dict())
+        else:
+            machines = []
         return machines
 
     @cache_region('api_data')
