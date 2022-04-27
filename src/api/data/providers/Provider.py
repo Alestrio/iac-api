@@ -63,3 +63,11 @@ class Provider:
         :return:
         """
         pass
+
+    @abstractmethod
+    def get_available_projects(self):
+        """
+        Returns a list of projects that are available on the provider
+        :return: list[Project]
+        """
+        pass

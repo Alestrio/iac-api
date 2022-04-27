@@ -169,6 +169,16 @@ class GCPProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['gcp']['available_zones']
 
+    def get_available_projects(self):
+        ressource = discovery.build('cloudresourcemanager', 'v1', credentials=self.credentials)
+        request = ressource.projects().list()
+        response = request.execute()
+        projects = []
+        for i in response['projects']:
+            projects.append(i['projectId'])
+        return projects
+
+
 if __name__ == '__main__':
     import time
     start = time.time()

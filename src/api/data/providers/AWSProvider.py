@@ -157,6 +157,9 @@ class AWSProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['aws']['available_zones']
 
+    def get_available_projects(self):
+        return []
+
 
 if __name__ == '__main__':
     provider = AWSProvider()

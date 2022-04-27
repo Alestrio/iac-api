@@ -5,7 +5,8 @@
 #  forbidden except with authorization from the authors.
 import json
 
-from fastapi import APIRouter
+import googleapiclient
+from fastapi import APIRouter, HTTPException
 
 from data.providers.AWSProvider import AWSProvider
 from data.providers.GCPProvider import GCPProvider
@@ -73,9 +74,14 @@ async def get_existing_simple_networks(provider: str):
     """
     Get existing networks
     """
-    provider = providers.get(provider)
-    # instantiate the provider
-    provider_instance = provider()
-    provider = provider_instance
-    networks = provider.get_simple_networks()
-    return networks
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        networks = provider.get_simple_networks()
+        return networks
+    except Exception as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )
