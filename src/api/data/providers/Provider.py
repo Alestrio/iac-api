@@ -71,3 +71,11 @@ class Provider:
         :return: list[Project]
         """
         pass
+
+    @staticmethod
+    def get_project():
+        """
+        Returns the project for the provider
+        :return:
+        """
+        pass

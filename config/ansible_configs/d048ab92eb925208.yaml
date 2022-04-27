@@ -1,0 +1,7 @@
+---
+- name: d048ab92eb925208
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  roles:
