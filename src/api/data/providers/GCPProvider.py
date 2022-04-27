@@ -93,7 +93,6 @@ class GCPProvider(Provider):
         response = request.execute()
         return Disk.from_google_disk(response)
 
-    @cache_region('api_data')
     def get_simple_machines(self):
         request = self.compute.instances().list(project=self.project_id, zone=self.zone)
         response = request.execute()
@@ -106,7 +105,7 @@ class GCPProvider(Provider):
                 machine.translateType()
                 machines.append(machine.dict())
         else:
-            machines = []
+            return response
         return machines
 
     @cache_region('api_data')

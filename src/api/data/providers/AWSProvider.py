@@ -69,7 +69,6 @@ class AWSProvider(Provider):
     def get_deployed_networks(self):
         pass
 
-    @cache_region('api_data')
     def get_simple_machines(self):
         ec2 = boto3.resource('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
                              aws_secret_access_key=self.config['secret_key'])
