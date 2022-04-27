@@ -85,7 +85,6 @@ class AWSProvider(Provider):
             machines.append(machine)
         return machines
 
-    @cache_region('api_data')
     def get_simple_networks(self):
         client = boto3.client('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
                               aws_secret_access_key=self.config['secret_key'])
