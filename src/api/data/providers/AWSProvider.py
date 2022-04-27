@@ -4,6 +4,7 @@
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
 import yaml
+from beaker.cache import cache_region, cache_regions
 
 from data.providers.Provider import Provider
 import boto3
@@ -37,6 +38,14 @@ class AWSProvider(Provider):
                 'zone': self.config['zone']
             }
 
+        cache_regions.update({
+            'api_data': {
+                'type': 'memory',
+                'expire': 60 * 60 * 1,  # 1h
+                'key_length': 250
+            }
+        })
+
     def get_deployed_instances(self):
         """
         Get all instances from AWS for the project
@@ -60,6 +69,7 @@ class AWSProvider(Provider):
     def get_deployed_networks(self):
         pass
 
+    @cache_region('api_data')
     def get_simple_machines(self):
         ec2 = boto3.resource('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
                              aws_secret_access_key=self.config['secret_key'])
@@ -76,6 +86,7 @@ class AWSProvider(Provider):
             machines.append(machine)
         return machines
 
+    @cache_region('api_data')
     def get_simple_networks(self):
         client = boto3.client('ec2', region_name=self.zone, aws_access_key_id=self.config['access_key'],
                               aws_secret_access_key=self.config['secret_key'])
@@ -143,8 +154,6 @@ class AWSProvider(Provider):
         with open("./config/app_config/provider.aws.yaml", 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['aws']['zone']
-
-
 
 
 if __name__ == '__main__':
