@@ -26,28 +26,41 @@ providers = {
 }
 
 
-@router.post("/region/{provider}/{zone}")
-async def set_region(provider: str, zone: str):
+@router.post("/zone/{provider}/{zone}")
+async def set_zone(provider: str, zone: str):
     """
-    Set the region for a provider
+    Set the zone for a provider
     """
     provider = providers.get(provider)
     # instantiate the provider
     provider_instance = provider()
     provider = provider_instance
-    # set the region
+    # set the zone
     provider.set_zone(zone)
     return {"message": "Region set"}
 
 
-@router.get("/region/{provider}")
-async def get_region(provider: str):
+@router.get("/zone/{provider}")
+async def get_zone(provider: str):
     """
-    Get the region for a provider
+    Get the zone for a provider
     """
     provider = providers.get(provider)
     # instantiate the provider
     provider_instance = provider()
     provider = provider_instance
-    # get the region
+    # get the zone
     return {"zone": provider.get_zone()}
+
+
+@router.get("/zones/{provider}")
+async def get_available_zones(provider: str):
+    """
+    Get the available zones for a provider
+    """
+    provider = providers.get(provider)
+    # instantiate the provider
+    provider_instance = provider()
+    provider = provider_instance
+    # get the zones
+    return {"zones": provider.get_available_zones()}
