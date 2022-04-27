@@ -85,3 +85,21 @@ async def get_available_projects(provider: str):
         raise HTTPException(
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
+
+
+@router.get("/project/{provider}")
+async def get_project(provider: str):
+    """
+    Get the project for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # get the project
+        return {"project": provider.get_project()}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )

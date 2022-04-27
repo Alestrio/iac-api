@@ -160,6 +160,10 @@ class AWSProvider(Provider):
     def get_available_projects(self):
         return []
 
+    @staticmethod
+    def get_project():
+        return None
+
 
 if __name__ == '__main__':
     provider = AWSProvider()
