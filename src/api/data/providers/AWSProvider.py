@@ -120,7 +120,6 @@ class AWSProvider(Provider):
                     is_allow=True,
                     rules=firewalls
                 ))
-            print(vpc)
             networks.append(
                 SimplifiedNetwork(
                     name=vpc['VpcId'],
@@ -130,7 +129,6 @@ class AWSProvider(Provider):
                     firewall_rules=firewalls
                 )
             )
-        print(networks)
         return networks
 
     @staticmethod
