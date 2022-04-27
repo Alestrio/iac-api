@@ -155,6 +155,12 @@ class AWSProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['aws']['zone']
 
+    @staticmethod
+    def get_available_zones():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['available_zones']
+
 
 if __name__ == '__main__':
     provider = AWSProvider()

@@ -164,6 +164,11 @@ class GCPProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['gcp']['zone']
 
+    @staticmethod
+    def get_available_zones():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['available_zones']
 
 if __name__ == '__main__':
     import time
