@@ -182,7 +182,6 @@ class GCPProvider(Provider):
     def get_project():
         with open("./config/app_config/provider.gcp.yaml", 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-            print(config['gcp']['project_id'])
             return config['gcp']['project_id']
 
 
