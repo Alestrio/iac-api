@@ -3,7 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
-
+import os
 from typing import Optional
 
 import boto3
@@ -12,7 +12,7 @@ from models.Network.Rule import Rule
 
 
 class FirewallRule(BaseModel):
-    name: Optional[str]
+    name: Optional[str] = 'firewall-' + os.urandom(4).hex()
     is_allow: bool = True
     rules: Optional[list[Rule]] = None
 
@@ -47,4 +47,4 @@ class FirewallRule(BaseModel):
             trule.from_ports = rule['allowed'][0].get('ports')
             trule.to_ports = rule['allowed'][0].get('ports')
         trule.source_networks = rule['sourceRanges']
-        return(trule)
+        return trule
