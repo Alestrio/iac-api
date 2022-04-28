@@ -3,6 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import os
 from typing import Optional
 
 from pydantic import BaseModel
@@ -17,10 +18,12 @@ class Network(BaseModel):
     Defines the structure of a network, independently of the provider
     """
     id: Optional[str] = None
-    name: Optional[str] = None
+    name: Optional[str] = 'network-' + os.urandom(4).hex()
     subnets: Optional[list[Subnetwork]] = None
     description: str = "network"
     routing_type: str = "static"
+    providers: list[str] = ['gcp']
+    firewall_rules: Optional[list[FirewallRule]]
     mtu: int = 1500
 
     @staticmethod

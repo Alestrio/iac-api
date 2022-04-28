@@ -3,6 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import os
 from typing import Optional
 
 import boto3
@@ -14,11 +15,11 @@ from models.Network.FirewallRule import FirewallRule
 
 class Subnetwork(BaseModel):
     id: Optional[str]
-    name: str
+    name: str = "subnet-" + os.urandom(4).hex()
     providers: list[str] = ['gcp']
-    ip_cidr_range: Optional[str]
-    gcp_zone: Optional[str]
-    aws_zone: Optional[str]
+    ip_cidr_range: Optional[str] = '0.0.0.0/0'
+    gcp_zone: Optional[str] = 'europe-west1-b'
+    aws_zone: Optional[str] = 'eu-west-1'
 
     @staticmethod
     def from_google_subnetwork(google_dict):
