@@ -79,3 +79,12 @@ class Provider:
         :return:
         """
         pass
+
+    @staticmethod
+    def set_project(project):
+        """
+        Sets the project for the provider
+        :param project:
+        :return:
+        """
+        pass

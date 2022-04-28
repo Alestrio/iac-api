@@ -103,3 +103,22 @@ async def get_project(provider: str):
         raise HTTPException(
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
+
+
+@router.post("/project/{provider}/{project}")
+async def set_project(provider: str, project: str):
+    """
+    Set the project for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # set the project
+        provider.set_project(project)
+        return {"message": "Project set"}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )
