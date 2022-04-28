@@ -17,8 +17,8 @@ class Subnetwork(BaseModel):
     name: str
     providers: list[str] = ['gcp']
     ip_cidr_range: Optional[str]
-    gcp_region: Optional[str]
-    aws_region: Optional[str]
+    gcp_zone: Optional[str]
+    aws_zone: Optional[str]
 
     @staticmethod
     def from_google_subnetwork(google_dict):

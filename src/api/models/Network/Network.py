@@ -18,9 +18,7 @@ class Network(BaseModel):
     """
     id: Optional[str] = None
     name: Optional[str] = None
-    gcp_zone: Optional[str] = None
-    aws_zone: str = "eu-west-1"
-    subnet: Optional[Subnetwork] = None
+    subnets: Optional[list[Subnetwork]] = None
     description: str = "network"
     routing_type: str = "static"
     mtu: int = 1500
