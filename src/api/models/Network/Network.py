@@ -9,6 +9,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from models.Network.FirewallRule import FirewallRule
+from models.Network.Rule import Rule
 from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
 
@@ -21,27 +22,20 @@ class Network(BaseModel):
     name: Optional[str] = 'network-' + os.urandom(4).hex()
     subnets: Optional[list[Subnetwork]] = None
     description: str = "network"
-    routing_type: str = "static"
-    providers: list[str] = ['gcp']
-    firewall_rules: Optional[list[FirewallRule]]
-    mtu: int = 1500
-
-    @staticmethod
-    def from_google_network(response, subnetworks, firewalls):
-        """
-        Converts a Google network to a Network model
-        :param firewalls:
-        :param subnetworks:
-        :param response: Google network response
-        :return: Network model
-        """
-        return Network(
-            id=response["id"],
-            name=response["name"],
-            subnet=subnetworks,
-            firewall_rules=list(firewalls),
-            #mtu=int(response["mtu"])
+    firewall_rules: Optional[list[FirewallRule]] = [
+        FirewallRule(
+            name="allow-ssh",
+            is_allow=True,
+            rules=[
+                Rule(
+                    protocol="tcp",
+                    from_ports=[22],
+                    to_ports=[22],
+                    source_networks=["0.0.0.0/0"],
+                )
+            ],
         )
+    ]
 
     @staticmethod
     def from_aws_network(networks, **kwargs):

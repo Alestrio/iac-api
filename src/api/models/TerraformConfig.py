@@ -4,12 +4,14 @@
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
 import os
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
 from data.storage import AnsibleStorage
 from models.Machine import Machine
+from models.Network.AWSNetwork import AWSNetwork
+from models.Network.GCPNetwork import GCPNetwork
 from models.Network.Network import Network
 
 
@@ -21,7 +23,7 @@ class TerraformConfig(BaseModel):
     ssh_user: str = "ubuntu"
     private_key_name: str = "sample-key"
     machines: list[Machine]
-    networks: Optional[list[Network]] = None
+    networks: Optional[list[Union[GCPNetwork, AWSNetwork]]] = None
     roles: list[str] = []
 
     def sanitize(self):
@@ -39,3 +41,21 @@ class TerraformConfig(BaseModel):
         for role in self.roles:
             if role not in AnsibleStorage.get_available_role_files():
                 self.roles.remove(role)
+
+    def get_gcp_networks(self):
+        """
+        Get the name of the GCP network
+        :return:
+        """
+        for net in self.networks:
+            if isinstance(net, GCPNetwork):
+                return net
+
+    def get_aws_networks(self):
+        """
+        Get the name of the AWS network
+        :return:
+        """
+        for net in self.networks:
+            if isinstance(net, AWSNetwork):
+                return net

@@ -19,8 +19,6 @@ from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
 
 class AWSProvider(Provider):
-    def get_machines(self):
-        pass
 
     provider_key = "aws"
     config_file = f"./config/app_config/provider.{provider_key}.yaml"
@@ -93,6 +91,7 @@ class AWSProvider(Provider):
             # Fetches all subnets in the vpc
             subns = []
             subnets = client.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc['VpcId']]}])['Subnets']
+            print(subnets)
             for subnet in subnets:
                 subns.append(
                     SimplifiedSubnetwork(
@@ -111,7 +110,8 @@ class AWSProvider(Provider):
                             protocol=rule['IpProtocol'],
                             from_ports=[rule['FromPort']] if 'FromPort' in rule else [-1],
                             to_ports=[rule['ToPort']] if 'ToPort' in rule else [-1],
-                            source_networks=rule['IpPermissionsEgress'] if 'IpPermissionsEgress' in rule else ['0.0.0.0/0'],
+                            source_networks=rule['IpPermissionsEgress'] if 'IpPermissionsEgress' in rule else ['0.0.0'
+                                                                                                               '.0/0'],
                         )
                     )
                 firewalls.append(FirewallRule(
