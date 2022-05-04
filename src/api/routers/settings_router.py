@@ -122,3 +122,21 @@ async def set_project(provider: str, project: str):
         raise HTTPException(
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
+
+
+@router.get("/forbidden_networks/{provider}")
+async def get_forbidden_networks(provider: str):
+    """
+    Get the forbidden networks for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # get the forbidden networks
+        return {"forbidden_networks": provider.get_forbidden_networks()}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )
