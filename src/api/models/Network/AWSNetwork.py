@@ -18,5 +18,3 @@ class AWSNetwork(Network):
     vpc_s3_out: bool = False
     dns_hostnames: bool = False
     dns_resolution: bool = False
-
-

@@ -197,6 +197,12 @@ class GCPProvider(Provider):
                 raise ValueError('Project not available')
         return
 
+    @staticmethod
+    def get_forbidden_networks():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['forbidden_networks']
+
 
 if __name__ == '__main__':
     import time
