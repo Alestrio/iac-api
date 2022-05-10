@@ -3,6 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import requests
 from beaker.cache import cache_regions, cache_region
 
 from data.providers.Provider import Provider
@@ -202,6 +203,23 @@ class GCPProvider(Provider):
         with open("./config/app_config/provider.gcp.yaml", 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['gcp']['forbidden_networks']
+
+    @staticmethod
+    def get_machine_types():
+        with open("./config/app_config/app.yaml", 'r') as f:
+            url = yaml.load(f, Loader=yaml.FullLoader)['gcp_instances_api']
+        response = requests.get(url).json()
+        type_names = []
+        for key, value in response.items():
+            for key2, value2 in value.items():
+                type_names.append(key2)
+        return type_names
+
+    @staticmethod
+    def get_machine_image_list():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['machine_images']
 
 
 if __name__ == '__main__':

@@ -164,6 +164,18 @@ class AWSProvider(Provider):
     def get_project():
         return None
 
+    @staticmethod
+    def get_machine_types():
+        with open("./config/app_config/app.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            url = config['aws_instances_api']
+            token = config['aws_token']
+            headers = {'Authorization': 'Bearer ' + token}
+            response = requests.get(url, headers=headers).json()
+            machine_types = []
+            for i in response['products']:
+                machine_types.append(i['name'])
+            return machine_types
 
 if __name__ == '__main__':
     provider = AWSProvider()
