@@ -3,6 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import requests
 from beaker.cache import cache_regions, cache_region
 
 from data.providers.Provider import Provider
@@ -37,12 +38,12 @@ class GCPProvider(Provider):
         self.compute = discovery.build('compute', 'v1', credentials=self.credentials)
 
         cache_regions.update({
-                'api_data': {
-                    'type': 'memory',
-                    'expire': 60 * 60 * 1,  # 1h
-                    'key_length': 250
-                }
-            })
+            'api_data': {
+                'type': 'memory',
+                'expire': 60 * 60 * 1,  # 1h
+                'key_length': 250
+            }
+        })
 
     def get_deployed_instances(self):
         """
@@ -56,7 +57,8 @@ class GCPProvider(Provider):
             machine = Machine(name=i['name'], providers=[self.provider_key], gcp_type=i['machineType'].split('/')[-1],
                               gcp_machine_image=i['disks'][0]['licenses'][0].split('/')[-1],
                               gcp_zone=self.zone,
-                              gcp_network=self.get_network_information_by_name(i['networkInterfaces'][0]['network'].split('/')[-1]),
+                              gcp_network=self.get_network_information_by_name(
+                                  i['networkInterfaces'][0]['network'].split('/')[-1]),
                               address=Address.from_google_address(i['networkInterfaces'][0]["accessConfigs"][0]),
                               disks=[Disk.from_google_disk(j) for j in i['disks']])
             machines.append(machine.dict())
@@ -203,10 +205,28 @@ class GCPProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['gcp']['forbidden_networks']
 
+    @staticmethod
+    def get_machine_types():
+        with open("./config/app_config/app.yaml", 'r') as f:
+            url = yaml.load(f, Loader=yaml.FullLoader)['gcp_instances_api']
+        response = requests.get(url).json()
+        type_names = []
+        for key, value in response.items():
+            for key2, value2 in value.items():
+                type_names.append(key2)
+        return type_names
+
+    @staticmethod
+    def get_machine_image_list():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['machine_images']
+
 
 if __name__ == '__main__':
     import time
+
     start = time.time()
     provider = GCPProvider()
-    print(provider.get_simple_networks())
+    print(provider.get_machine_types())
     print(time.time() - start)

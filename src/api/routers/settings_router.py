@@ -140,3 +140,39 @@ async def get_forbidden_networks(provider: str):
         raise HTTPException(
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
+
+
+@router.get("/machine_types/{provider}")
+async def get_machine_types(provider: str):
+    """
+    Get the machine types for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # get the machine types
+        return {"machine_types": provider.get_machine_types()}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )
+
+
+@router.get("/machine_images/{provider}")
+async def get_machine_images(provider: str):
+    """
+    Get the machine images for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # get the machine images
+        return {"machine_images": provider.get_machine_image_list()}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )

@@ -3,6 +3,9 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
+import json
+
+import requests
 import yaml
 from beaker.cache import cache_region, cache_regions
 
@@ -164,7 +167,26 @@ class AWSProvider(Provider):
     def get_project():
         return None
 
+    @staticmethod
+    def get_machine_types():
+        with open("./config/app_config/app.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            url = config['aws_instances_api']
+            token = config['aws_token']
+            headers = {'Authorization': 'Bearer ' + token}
+            response = requests.get(url, headers=headers).json()
+            machine_types = []
+            for i in response['products']:
+                machine_types.append(i['name'])
+            return machine_types
+
+    @staticmethod
+    def get_machine_image_list():
+        with open("./config/app_config/aws_amis.json", 'r') as f:
+            config = json.load(f)
+            return config
+
 
 if __name__ == '__main__':
     provider = AWSProvider()
-    provider.get_simple_networks()
+    print(provider.get_machine_image_list())
