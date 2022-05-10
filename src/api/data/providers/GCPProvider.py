@@ -38,12 +38,12 @@ class GCPProvider(Provider):
         self.compute = discovery.build('compute', 'v1', credentials=self.credentials)
 
         cache_regions.update({
-                'api_data': {
-                    'type': 'memory',
-                    'expire': 60 * 60 * 1,  # 1h
-                    'key_length': 250
-                }
-            })
+            'api_data': {
+                'type': 'memory',
+                'expire': 60 * 60 * 1,  # 1h
+                'key_length': 250
+            }
+        })
 
     def get_deployed_instances(self):
         """
@@ -57,7 +57,8 @@ class GCPProvider(Provider):
             machine = Machine(name=i['name'], providers=[self.provider_key], gcp_type=i['machineType'].split('/')[-1],
                               gcp_machine_image=i['disks'][0]['licenses'][0].split('/')[-1],
                               gcp_zone=self.zone,
-                              gcp_network=self.get_network_information_by_name(i['networkInterfaces'][0]['network'].split('/')[-1]),
+                              gcp_network=self.get_network_information_by_name(
+                                  i['networkInterfaces'][0]['network'].split('/')[-1]),
                               address=Address.from_google_address(i['networkInterfaces'][0]["accessConfigs"][0]),
                               disks=[Disk.from_google_disk(j) for j in i['disks']])
             machines.append(machine.dict())
@@ -224,7 +225,8 @@ class GCPProvider(Provider):
 
 if __name__ == '__main__':
     import time
+
     start = time.time()
     provider = GCPProvider()
-    print(provider.get_simple_networks())
+    print(provider.get_machine_types())
     print(time.time() - start)
