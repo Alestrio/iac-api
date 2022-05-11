@@ -186,6 +186,10 @@ class AWSProvider(Provider):
             config = json.load(f)
             return config
 
+    @staticmethod
+    def get_disk_types():
+        return 'none'
+
 
 if __name__ == '__main__':
     provider = AWSProvider()

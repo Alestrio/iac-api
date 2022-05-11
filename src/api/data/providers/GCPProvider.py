@@ -222,6 +222,12 @@ class GCPProvider(Provider):
             config = yaml.load(f, Loader=yaml.FullLoader)
             return config['gcp']['machine_images']
 
+    @staticmethod
+    def get_disk_types():
+        with open("./config/app_config/provider.gcp.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['gcp']['disk_types']
+
 
 if __name__ == '__main__':
     import time
