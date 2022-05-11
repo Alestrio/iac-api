@@ -176,3 +176,20 @@ async def get_machine_images(provider: str):
         raise HTTPException(
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
+
+@router.get("/disk_types/{provider}")
+async def get_disk_types(provider: str):
+    """
+    Get the disk types for a provider
+    """
+    try:
+        provider = providers.get(provider)
+        # instantiate the provider
+        provider_instance = provider()
+        provider = provider_instance
+        # get the disk types
+        return {"disk_types": provider.get_disk_types()}
+    except googleapiclient.errors.HttpError as e:
+        raise HTTPException(
+            status_code=e.resp.status, detail=json.loads(e.content)["error"]
+        )
