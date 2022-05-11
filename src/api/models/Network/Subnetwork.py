@@ -16,10 +16,9 @@ from models.Network.FirewallRule import FirewallRule
 class Subnetwork(BaseModel):
     id: Optional[str]
     name: str = "subnet-" + os.urandom(4).hex()
-    providers: list[str] = ['gcp']
+    provider: str = 'gcp'
     ip_cidr_range: Optional[str] = '0.0.0.0/0'
-    gcp_zone: Optional[str] = 'europe-west1-b'
-    aws_zone: Optional[str] = 'eu-west-1'
+    zone: Optional[str] = 'eu-west-1'
 
     @staticmethod
     def from_google_subnetwork(google_dict):
@@ -31,9 +30,8 @@ class Subnetwork(BaseModel):
         #print(google_dict)
         return Subnetwork(
             name=google_dict['name'],
-            network_name=google_dict['network'].split('/')[-1],
             ip_cidr_range=google_dict['ipCidrRange'],
-            gcp_region=google_dict['region'].split('/')[-1],
+            zone=google_dict['region'].split('/')[-1],
         )
 
     @staticmethod
@@ -46,19 +44,19 @@ class Subnetwork(BaseModel):
             name="default",
             network_name=interface.description,
             ip_cidr_range=interface.subnet.cidr_block,
-            aws_region=interface.subnet.availability_zone.split('-')[-1],
+            zone=interface.subnet.availability_zone.split('-')[-1],
         )
 
 
 class SimplifiedSubnetwork(BaseModel):
     name: str
     ip_cidr_range: str
-    region: str
+    zone: str
 
     @staticmethod
     def from_subnetwork(subnet):
         return SimplifiedSubnetwork(
             name=subnet.name,
             ip_cidr_range=subnet.ip_cidr_range,
-            region=subnet.gcp_zone,
+            zone=subnet.gcp_zone,
         )
