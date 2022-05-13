@@ -139,7 +139,7 @@ class GCPProvider(Provider):
                 firewall = FirewallRule(rules=rules, name=i['name'], is_allow=True)
                 network = SimplifiedNetwork(name=i['name'], zone=self.zone,
                                             subnets=subnets, description=i['description'] if 'description' in i else '',
-                                            firewall_rules=[firewall])
+                                            firewalls=[firewall])
 
                 networks.append(network.dict())
         return networks
