@@ -98,10 +98,10 @@ class AWSProvider(Provider):
             for subnet in subnets:
                 subns.append(
                     SimplifiedSubnetwork(
+                        zone=subnet['AvailabilityZone'][:-1],
                         name=subnet['SubnetId'],
                         subnetwork_name=subnet['SubnetId'],
                         ip_cidr_range=subnet['CidrBlock'],
-                        region=subnet['AvailabilityZone'][:-1],
                      )
                 )
             firewalls = []
@@ -128,7 +128,7 @@ class AWSProvider(Provider):
                     subnets=subns,
                     zone=self.zone,
                     description='None',
-                    firewall_rules=firewalls
+                    firewalls=firewalls
                 )
             )
         return networks

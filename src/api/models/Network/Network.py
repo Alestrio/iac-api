@@ -55,7 +55,7 @@ class SimplifiedNetwork(BaseModel):
     zone: str
     subnets: list[SimplifiedSubnetwork] = []
     description: str = "network"
-    firewall_rules: Optional[list[FirewallRule]] = None
+    firewalls: Optional[list[FirewallRule]] = None
 
 
 
