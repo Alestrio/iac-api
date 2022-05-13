@@ -22,7 +22,7 @@ class Network(BaseModel):
     name: Optional[str] = 'network-' + os.urandom(4).hex()
     subnets: Optional[list[Subnetwork]] = None
     description: str = "network"
-    firewall_rules: Optional[list[FirewallRule]] = [
+    firewalls: Optional[list[FirewallRule]] = [
         FirewallRule(
             name="allow-ssh",
             is_allow=True,
