@@ -58,5 +58,5 @@ class SimplifiedSubnetwork(BaseModel):
         return SimplifiedSubnetwork(
             name=subnet.name,
             ip_cidr_range=subnet.ip_cidr_range,
-            zone=subnet.gcp_zone,
+            zone=subnet.zone,
         )
