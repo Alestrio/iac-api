@@ -6,3 +6,4 @@ config/app_config/
 *.pyc
 
 config/terraform_configs/
+config/ansible_configs/
