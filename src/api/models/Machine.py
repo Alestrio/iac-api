@@ -5,7 +5,8 @@
 #  forbidden except with authorization from the authors.
 import json
 import os
-from typing import Optional, Union
+from ipaddress import IPv4Address
+from typing import Optional, Union, Literal
 
 import requests
 import yaml
@@ -22,7 +23,7 @@ class Machine(BaseModel):
     This model is used to represent a machine for any provider.
     """
     name: Optional[str]
-    providers: str = 'gcp'
+    provider: str = 'gcp'
     type: Optional[str] = "t2.micro"
     machine_image: str = "ami-0f9c9d7f2b6c8f9d6"
     zone: str = "europe-west1-b"
@@ -30,7 +31,8 @@ class Machine(BaseModel):
     subnetwork: str = "default"
     addresses: Address = Address(name=f"machine-address-{os.urandom(4).hex()}")
     disks: list[Disk]
-    has_public_ip: bool = False
+    custom_public_ip: Literal["none", "ephemeral", "static"] = "none"
+    custom_private_ip: Union[Literal["auto"], IPv4Address] = "auto"
     http_access: bool = False
     https_access: bool = False
 
