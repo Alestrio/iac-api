@@ -7,14 +7,14 @@ import os
 from typing import Optional
 
 import boto3
-from pydantic import BaseModel, validator
-from models.Network.Rule import Rule
+from pydantic import BaseModel
+from models.Network.Rule import Rule, ProtocolRule
 
 
-class FirewallRule(BaseModel):
+class Firewall(BaseModel):
     name: Optional[str] = 'firewall-' + os.urandom(4).hex()
     is_allow: bool = True
-    rules: Optional[list[Rule]] = None
+    rules: Optional[list[Rule, ProtocolRule]] = None
 
     @staticmethod
     def from_aws_firewall(groups, **kwargs):
@@ -32,7 +32,7 @@ class FirewallRule(BaseModel):
                     source_networks=[i['CidrIp'] for i in rule['IpRanges']],
                 )
                 rs.append(r)
-        return [FirewallRule(
+        return [Firewall(
             name="default",
             is_allow=True,
             rules=rs,

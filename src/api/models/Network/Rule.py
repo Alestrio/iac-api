@@ -17,3 +17,11 @@ class Rule(BaseModel):
     from_ports: list[Union[int, str]] = [22]
     to_ports: list[Union[int, str]] = [22]
     source_networks: list[str] = ["0.0.0.0/0"]
+
+
+class ProtocolRule(Rule):
+    """
+    A rule that specifies a protocol
+    """
+    protocol: str = "icmp"
+    source_networks = ["0.0.0.0/0"]

@@ -11,7 +11,7 @@ from models.Network.Network import Network
 class AWSNetwork(Network):
     zone: str = "us-east-1"
     vpc_only: bool = False
-    available_zone: int = 2
+    availability_zones: int = 2
     private_subnet_count: int = 2
     public_subnet_count: int = 2
     ip_cidr_range: str = "10.0.0.0/16"

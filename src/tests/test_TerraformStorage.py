@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from data.storage import TerraformStorage
 from models.Disk import Disk
-from models.Network.FirewallRule import FirewallRule
+from models.Network.Firewall import FirewallRule
 from models.Machine import Machine
 from models.Network.Network import Network
 from models.Network.Subnetwork import Subnetwork

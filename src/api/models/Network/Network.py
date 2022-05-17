@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from models.Network.FirewallRule import FirewallRule
+from models.Network.Firewall import Firewall
 from models.Network.Rule import Rule
 from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
@@ -20,11 +20,8 @@ class Network(BaseModel):
     """
     id: Optional[str] = None
     name: Optional[str] = 'network-' + os.urandom(4).hex()
-    subnets: Optional[list[Subnetwork]] = None
-    description: str = "network"
-    firewalls: Optional[list[FirewallRule]] = [
-        FirewallRule(
-            name="allow-ssh",
+    firewalls: Optional[Firewall] = Firewall(
+            name="firewall-" + name + "-" + os.urandom(4).hex(),
             is_allow=True,
             rules=[
                 Rule(
@@ -35,7 +32,6 @@ class Network(BaseModel):
                 )
             ],
         )
-    ]
 
     @staticmethod
     def from_aws_network(networks, **kwargs):
@@ -45,7 +41,7 @@ class Network(BaseModel):
                 id=network.id,
                 name=network.description,
                 subnet=Subnetwork.from_aws_network(network.id, **kwargs),
-                firewall_rules=FirewallRule.from_aws_firewall(network.groups, **kwargs)
+                firewall_rules=Firewall.from_aws_firewall(network.groups, **kwargs)
             ))
         return nets
 
@@ -55,7 +51,7 @@ class SimplifiedNetwork(BaseModel):
     zone: str
     subnets: list[SimplifiedSubnetwork] = []
     description: str = "network"
-    firewalls: Optional[list[FirewallRule]] = None
+    firewall: Optional[Firewall] = None
 
 
 

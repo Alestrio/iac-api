@@ -15,7 +15,7 @@ from google.oauth2 import service_account
 from models.Disk import Disk
 from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
-from models.Network.FirewallRule import FirewallRule
+from models.Network.Firewall import FirewallRule
 from models.Network.Network import Network, SimplifiedNetwork
 from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
