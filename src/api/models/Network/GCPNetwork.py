@@ -11,11 +11,12 @@ from models.Network.Subnetwork import Subnetwork
 
 class GCPNetwork(Network):
     zone: str = "europe-west1-b"
-    subnets: Optional[list[Subnetwork]] = None
+    subnetworks: Optional[list[Subnetwork]] = None
     description: str = "network"
     routing_type: Literal["REGIONAL", "GLOBAL"] = "REGIONAL"
     google_private_access: bool = False
     google_stream_journal: bool = False
+    PROVIDER: Optional[Literal["GCP"]] = "GCP"
 
     @staticmethod
     def from_google_network(response, subnetworks, firewalls):

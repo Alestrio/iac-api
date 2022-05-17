@@ -1,9 +1,0 @@
----
-- name: 54ed3dd5df8b7a88
-  hosts: all
-  remote_user: ubuntu
-  become: yes
-
-  roles:
-    - git
-    - nginx

@@ -18,31 +18,34 @@ class Network(BaseModel):
     Network model
     Defines the structure of a network, independently of the provider
     """
+
     id: Optional[str] = None
-    name: Optional[str] = 'network-' + os.urandom(4).hex()
+    name: Optional[str] = "network-" + os.urandom(4).hex()
     firewalls: Optional[Firewall] = Firewall(
-            name="firewall-" + name + "-" + os.urandom(4).hex(),
-            is_allow=True,
-            rules=[
-                Rule(
-                    protocol="tcp",
-                    from_ports=[22],
-                    to_ports=[22],
-                    source_networks=["0.0.0.0/0"],
-                )
-            ],
-        )
+        name="firewall-" + name + "-" + os.urandom(4).hex(),
+        is_allow=True,
+        rules=[
+            Rule(
+                protocol="tcp",
+                from_ports=[22],
+                to_ports=[22],
+                source_networks=["0.0.0.0/0"],
+            )
+        ],
+    )
 
     @staticmethod
     def from_aws_network(networks, **kwargs):
         nets = []
         for network in networks:
-            nets.append(Network(
-                id=network.id,
-                name=network.description,
-                subnet=Subnetwork.from_aws_network(network.id, **kwargs),
-                firewall_rules=Firewall.from_aws_firewall(network.groups, **kwargs)
-            ))
+            nets.append(
+                Network(
+                    id=network.id,
+                    name=network.description,
+                    subnet=Subnetwork.from_aws_network(network.id, **kwargs),
+                    firewall_rules=Firewall.from_aws_firewall(network.groups, **kwargs),
+                )
+            )
         return nets
 
 
@@ -52,6 +55,3 @@ class SimplifiedNetwork(BaseModel):
     subnets: list[SimplifiedSubnetwork] = []
     description: str = "network"
     firewall: Optional[Firewall] = None
-
-
-

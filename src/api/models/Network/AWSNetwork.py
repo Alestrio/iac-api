@@ -3,7 +3,7 @@
 #  Copyright (c), MahjoPi, 2022.
 #  This code belongs exclusively to its authors, use, redistribution or reproduction
 #  forbidden except with authorization from the authors.
-from typing import Literal
+from typing import Literal, Optional
 
 from models.Network.Network import Network
 
@@ -19,3 +19,4 @@ class AWSNetwork(Network):
     vpc_s3_out: bool = False
     dns_hostnames: bool = False
     dns_resolution: bool = False
+    PROVIDER: Optional[Literal["AWS"]] = "AWS"

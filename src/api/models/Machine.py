@@ -25,11 +25,11 @@ class Machine(BaseModel):
     name: Optional[str]
     provider: str = 'gcp'
     type: Optional[str] = "t2.micro"
-    machine_image: str = "ami-0f9c9d7f2b6c8f9d6"
+    machine_image: str = "ubuntu-1804-bionic-v20200101"
     zone: str = "europe-west1-b"
     network: str = "default"
     subnetwork: str = "default"
-    addresses: Address = Address(name=f"machine-address-{os.urandom(4).hex()}")
+    address: Address = Address(name=f"machine-address-{os.urandom(4).hex()}")
     disks: list[Disk]
     custom_public_ip: Literal["none", "ephemeral", "static"] = "none"
     custom_private_ip: Union[Literal["auto"], IPv4Address] = "auto"
