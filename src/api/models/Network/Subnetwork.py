@@ -10,7 +10,7 @@ import boto3
 import requests
 from pydantic import BaseModel
 
-from models.Network.Firewall import FirewallRule
+from models.Network.Firewall import Firewall
 
 
 class Subnetwork(BaseModel):

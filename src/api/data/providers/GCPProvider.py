@@ -15,7 +15,7 @@ from google.oauth2 import service_account
 from models.Disk import Disk
 from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
-from models.Network.Firewall import FirewallRule
+from models.Network.Firewall import Firewall
 from models.Network.Network import Network, SimplifiedNetwork
 from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
 
@@ -87,7 +87,7 @@ class GCPProvider(Provider):
         firewall_list = []
         for i in response['items']:
             if i['network'] == name:
-                firewall_list.append(FirewallRule.from_google_firewall(i).__dict__)
+                firewall_list.append(Firewall.from_google_firewall(i).__dict__)
         return firewall_list
 
     def get_disk_information_by_name(self, name):
@@ -135,8 +135,8 @@ class GCPProvider(Provider):
                 rules = []
                 for k in firewall_response['items']:
                     if k['network'].split('/')[-1] == i['name']:
-                        rules.append(FirewallRule.from_google_rule(k))
-                firewall = FirewallRule(rules=rules, name=i['name'], is_allow=True)
+                        rules.append(Firewall.from_google_rule(k))
+                firewall = Firewall(rules=rules, name=i['name'], is_allow=True)
                 network = SimplifiedNetwork(name=i['name'], zone=self.zone,
                                             subnets=subnets, description=i['description'] if 'description' in i else '',
                                             firewalls=[firewall])

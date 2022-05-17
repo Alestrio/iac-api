@@ -24,4 +24,4 @@ class ProtocolRule(Rule):
     A rule that specifies a protocol
     """
     protocol: str = "icmp"
-    source_networks = ["0.0.0.0/0"]
+    source_networks: list[str] = ["0.0.0.0/0"]
