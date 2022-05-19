@@ -44,7 +44,7 @@ class AWSNetwork(Network):
         base_cidr = base_cidr.split(".")
         base_cidr = int(base_cidr[0]) << 24 | int(base_cidr[1]) << 16 | int(base_cidr[2]) << 8 | int(base_cidr[3])
         # Then, we are doing the AND operation to get the base cidr
-        base_cidr = base_cidr & (2 ** (32 - new_mask) - 1)
+        masked_base_cidr = base_cidr & (2 ** (32 - new_mask) - 1)
 
         # Now, with the borrowed bits, we can split the cidr
         for i in range(bits_to_borrow + 1):
