@@ -21,6 +21,7 @@ class AWSNetwork(Network):
     dns_hostnames: bool = False
     dns_resolution: bool = False
     PROVIDER: Optional[Literal["AWS"]] = "AWS"
+    cidrs = []
 
     def create_subnets_cidr_ranges(self):
         """
@@ -52,7 +53,7 @@ class AWSNetwork(Network):
             cidr_to_append = str(cidr_to_append >> 24 & 255) + "." + str(cidr_to_append >> 16 & 255) + "." + str(
                 cidr_to_append >> 8 & 255) + "." + str(cidr_to_append & 255) + "/" + str(new_mask)
             cidrs.append(cidr_to_append)
-        return cidrs
+        self.cidrs = cidrs
 
             
 

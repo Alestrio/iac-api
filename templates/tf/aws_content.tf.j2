@@ -1,28 +1,34 @@
-{% for i in machines if 'aws' in i.providers %}
+# Provider declaration (AWS)
 provider "aws" {
-    region = local.aws_region
+  access_key = "{{access_key}}"
+  secret_key = "{{secret_key}}"
+  region     = "us-east-1"
+}
+
+# Networks declaration
+{% for net in networks %}
+{% if net.PROVIDER == "AWS" %}
+resource "aws_vpc" "{{net.name}}" {
+  cidr_block = "{{net.ip_cidr_range}}"
+  tags = {
+    Name = "{{net.name}}"
+  }
+  # set zone
+  availability_zone = "{{net.zone}}"
+  enable_dns_hostnames = {{ net.dns_hostnames }}
+  enable_dns_support = {{ net.dns_resolution }}
+}
+
+# declaring subnets
+{% for i in range(0, net.private_subnet_count) %}
+resource "aws_subnet" "{{net.name}}-{{i}}" {
+  vpc_id = "${aws_vpc.{{net.name}}.id}"
+  cidr_block = "{{net.cidrs[i]}}"
+  availability_zone = "{{net.zone}}"
+  tags = {
+    Name = "{{net.name}}-{{i}}"
+  }
 }
 {% endfor %}
-
-{% for machine in machines %}
-{% if 'aws' in machine.providers %}
-resource "aws_instance" "{{ machine.name }}" {
-    ami = "{{ machine.aws_machine_image }}"
-    instance_type = "{{ machine.aws_type }}"
-    tags = {
-        Name = "{{ machine.name }}"
-    }
-}
-{% endif %}
-{% endfor %}
-
-{% for network in networks %}
-{% if 'aws' in network.provider %}
-resource "aws_vpc" "{{ network.name }}" {
-    cidr_block = "{{ network.subnet[0].ip_cidr_range }}"
-    tags = {
-        Name = "{{ network.name }}"
-    }
-}
 {% endif %}
 {% endfor %}
