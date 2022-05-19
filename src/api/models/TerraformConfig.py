@@ -41,6 +41,10 @@ class TerraformConfig(BaseModel):
         for role in self.roles:
             if role not in AnsibleStorage.get_available_role_files():
                 self.roles.remove(role)
+        
+        for net in self.networks:
+            if isinstance(net, AWSNetwork):
+                net.create_subnets_cidr_ranges()
 
     def get_gcp_networks(self):
         """
