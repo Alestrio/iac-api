@@ -1,6 +1,6 @@
 provider "google" {
-    project = {{ project_id }}
-    region = {{ gcp_zone }}
+    project = "{{ project_id }}"
+    region = "{{ gcp_zone }}"
     credentials = "${file("../../../config/secrets/client_secret.json")}"
 }
 # Networks
@@ -100,5 +100,5 @@ resource "google_compute_instance" "{{ machine.name }}" {
         command = "ansible-playbook -i ${self.network_interface.0.access_config.0.nat_ip} --private-key ../../secrets/{{private_key_name}} ../ansible_configs/{{ config_name }}.yaml"
     }
 }
-    {% endif %}
+{% endif %}
 {% endfor %}

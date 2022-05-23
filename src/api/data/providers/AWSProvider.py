@@ -190,6 +190,18 @@ class AWSProvider(Provider):
     def get_disk_types():
         return 'none'
 
+    @staticmethod
+    def get_access_key():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['access_key']
+
+    @staticmethod
+    def get_secret_key():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['secret_key']
+    
 
 if __name__ == '__main__':
     provider = AWSProvider()

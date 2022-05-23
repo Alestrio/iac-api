@@ -7,6 +7,7 @@ import os
 from jinja2 import Template
 
 from models.TerraformConfig import TerraformConfig
+from data.providers.AWSProvider import AWSProvider
 
 
 def render_content_templates(config: TerraformConfig):
@@ -23,7 +24,9 @@ def render_content_templates(config: TerraformConfig):
         with open(f"./templates/tf/{template}_content.tf.j2", "r") as f:
             template = Template(f.read(), trim_blocks=True, lstrip_blocks=True)
             rendered_template = template.render(
-                machines=config.machines, networks=config.networks
+                machines=config.machines, networks=config.networks, project_id=config.project_id,
+                gcp_zone=config.gcp_region, access_key=AWSProvider.get_access_key(),
+                secret_key=AWSProvider.get_secret_key(), ssh_user=config.ssh_user
             )
             content += rendered_template
     return content
