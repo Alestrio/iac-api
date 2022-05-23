@@ -30,5 +30,54 @@ resource "aws_subnet" "{{net.name}}-{{i}}" {
   }
 }
 {% endfor %}
+{% for i in net.firewalls.rules %}
+resource "aws_security_group" "{{net.name}}-{{i.name}}" {
+  name = "{{net.name}}-{{i.name}}"
+  description = "{{net.name}}-{{i.name}}"
+  vpc_id = "${aws_vpc.{{net.name}}.id}"
+  ingress = [
+    {
+      from_port = "{{i.from_ports[0]}}"
+      to_port = "{{i.to_ports[0]}}"
+      protocol = "{{i.protocol}}"
+      cidr_blocks = [
+        "{{i.source_networks}}"
+      ]
+    }
+  ]
+}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# Instances declaration
+{% for instance in machines %}
+{% if instance.provider == 'aws' %}
+resource "aws_instance" "{{instance.name}}" {
+  ami = "{{instance.machine_image}}"
+  instance_type = "{{instance.type}}"
+  subnet_id = "${aws_subnet.{{instance.subnet}}.id}"
+  tags = {
+    Name = "{{instance.name}}"
+  }
+  # set zone
+  availability_zone = "{{instance.zone}}"
+
+  provisioner "remote-exec" {
+        connection {
+            type        = "ssh"
+            user        = local.ssh_user
+            private_key = file(local.private_key_path)
+            host        = self.network_interface.0.access_config.0.nat_ip
+        }
+
+        inline = ["sudo apt-get install -y python-minimal python-setuptools"]
+  }
+
+  provisioner "local-exec" {
+    # Using ansible
+    command = "ansible-playbook -i {{self.public_ip}} --private-key ../../secrets/{{private_key_name}} ../ansible_configs/{{ config_name }}.yaml"
+  }
+}
 {% endif %}
 {% endfor %}
