@@ -16,7 +16,7 @@ class GCPNetwork(Network):
     routing_type: Literal["REGIONAL", "GLOBAL"] = "REGIONAL"
     google_private_access: bool = False
     google_stream_journal: bool = False
-    PROVIDER: Optional[Literal["GCP"]] = "GCP"
+    PROVIDER = "GCP"
 
     @staticmethod
     def from_google_network(response, subnetworks, firewalls):
