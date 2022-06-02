@@ -20,7 +20,7 @@ class AWSNetwork(Network):
     vpc_s3_out: bool = False
     dns_hostnames: bool = False
     dns_resolution: bool = False
-    PROVIDER: Optional[Literal["AWS"]] = "AWS"
+    PROVIDER = "AWS"
     cidrs = []
 
     def create_subnets_cidr_ranges(self):

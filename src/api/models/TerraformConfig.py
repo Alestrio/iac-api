@@ -21,7 +21,7 @@ class TerraformConfig(BaseModel):
     ssh_user: str = "ubuntu"
     private_key_name: str = "sample-key"
     machines: list[Machine]
-    networks: Optional[list[Union[GCPNetwork, AWSNetwork]]] = None
+    networks: Optional[list[Union[AWSNetwork, GCPNetwork]]] = None
     roles: list[str] = []
 
     def sanitize(self):
