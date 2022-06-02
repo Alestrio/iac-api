@@ -123,6 +123,19 @@ async def set_project(provider: str, project: str):
             status_code=e.resp.status, detail=json.loads(e.content)["error"]
         )
 
+@router.get("/keys")
+async def get_available_keys():
+    """
+    Get the available keys
+    """
+    # The keys are text files located in config/secrets/private_keys
+    # get the keys using OS
+    keys = []
+    import os
+    for file in os.listdir("config/secrets/private_keys"):
+        keys.append(file)
+    return {"keys": keys}
+
 
 @router.get("/forbidden_networks/{provider}")
 async def get_forbidden_networks(provider: str):
