@@ -18,8 +18,6 @@ from models.Network.Network import Network
 class TerraformConfig(BaseModel):
     name: str = os.urandom(8).hex()
     project_id: str = "environnement-de-test-329611"
-    gcp_region: str = "europe-west1"
-    aws_region: str = "eu-west-1"
     ssh_user: str = "ubuntu"
     private_key_name: str = "sample-key"
     machines: list[Machine]
@@ -41,6 +39,10 @@ class TerraformConfig(BaseModel):
         for role in self.roles:
             if role not in AnsibleStorage.get_available_role_files():
                 self.roles.remove(role)
+        
+        for net in self.networks:
+            if isinstance(net, AWSNetwork):
+                net.create_subnets_cidr_ranges()
 
     def get_gcp_networks(self):
         """

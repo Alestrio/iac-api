@@ -15,7 +15,7 @@ import boto3
 from models.Disk import Disk
 from models.Machine import Machine, SimplifiedMachine
 from models.Network.Address import Address
-from models.Network.FirewallRule import FirewallRule
+from models.Network.Firewall import Firewall
 from models.Network.Network import Network, SimplifiedNetwork
 from models.Network.Rule import Rule
 from models.Network.Subnetwork import Subnetwork, SimplifiedSubnetwork
@@ -117,7 +117,7 @@ class AWSProvider(Provider):
                                                                                                                '.0/0'],
                         )
                     )
-                firewalls.append(FirewallRule(
+                firewalls.append(Firewall(
                     name=firewall['GroupName'],
                     is_allow=True,
                     rules=firewalls
@@ -190,6 +190,18 @@ class AWSProvider(Provider):
     def get_disk_types():
         return 'none'
 
+    @staticmethod
+    def get_access_key():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['access_key']
+
+    @staticmethod
+    def get_secret_key():
+        with open("./config/app_config/provider.aws.yaml", 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            return config['aws']['secret_key']
+    
 
 if __name__ == '__main__':
     provider = AWSProvider()

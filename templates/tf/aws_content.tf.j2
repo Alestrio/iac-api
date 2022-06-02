@@ -1,28 +1,83 @@
-{% for i in machines if 'aws' in i.providers %}
+# Provider declaration (AWS)
 provider "aws" {
-    region = local.aws_region
+  access_key = "{{access_key}}"
+  secret_key = "{{secret_key}}"
+  region     = "us-east-1"
+}
+
+# Networks declaration
+{% for net in networks %}
+{% if net.PROVIDER == "AWS" %}
+resource "aws_vpc" "{{net.name}}" {
+  cidr_block = "{{net.ip_cidr_range}}"
+  tags = {
+    Name = "{{net.name}}"
+  }
+  # set zone
+  availability_zone = "{{net.zone}}"
+  enable_dns_hostnames = {{ net.dns_hostnames }}
+  enable_dns_support = {{ net.dns_resolution }}
+}
+
+# declaring subnets
+{% for i in range(0, net.private_subnet_count) %}
+resource "aws_subnet" "{{net.name}}-{{i}}" {
+  vpc_id = "${aws_vpc.{{net.name}}.id}"
+  cidr_block = "{{net.cidrs[i]}}"
+  availability_zone = "{{net.zone}}"
+  tags = {
+    Name = "{{net.name}}-{{i}}"
+  }
 }
 {% endfor %}
-
-{% for machine in machines %}
-{% if 'aws' in machine.providers %}
-resource "aws_instance" "{{ machine.name }}" {
-    ami = "{{ machine.aws_machine_image }}"
-    instance_type = "{{ machine.aws_type }}"
-    tags = {
-        Name = "{{ machine.name }}"
+{% for i in net.firewalls.rules %}
+resource "aws_security_group" "{{net.name}}-{{i.name}}" {
+  name = "{{net.name}}-{{i.name}}"
+  description = "{{net.name}}-{{i.name}}"
+  vpc_id = "${aws_vpc.{{net.name}}.id}"
+  ingress = [
+    {
+      from_port = "{{i.from_ports[0]}}"
+      to_port = "{{i.to_ports[0]}}"
+      protocol = "{{i.protocol}}"
+      cidr_blocks = [
+        "{{i.source_networks}}"
+      ]
     }
+  ]
 }
+{% endfor %}
 {% endif %}
 {% endfor %}
 
-{% for network in networks %}
-{% if 'aws' in network.provider %}
-resource "aws_vpc" "{{ network.name }}" {
-    cidr_block = "{{ network.subnet[0].ip_cidr_range }}"
-    tags = {
-        Name = "{{ network.name }}"
-    }
+# Instances declaration
+{% for instance in machines %}
+{% if instance.provider == 'aws' %}
+resource "aws_instance" "{{instance.name}}" {
+  ami = "{{instance.machine_image}}"
+  instance_type = "{{instance.type}}"
+  subnet_id = "${aws_subnet.{{instance.subnet}}.id}"
+  tags = {
+    Name = "{{instance.name}}"
+  }
+  # set zone
+  availability_zone = "{{instance.zone}}"
+
+  provisioner "remote-exec" {
+        connection {
+            type        = "ssh"
+            user        = local.ssh_user
+            private_key = file(local.private_key_path)
+            host        = self.network_interface.0.access_config.0.nat_ip
+        }
+
+        inline = ["sudo apt-get install -y python-minimal python-setuptools"]
+  }
+
+  provisioner "local-exec" {
+    # Using ansible
+    command = "ansible-playbook -i {{self.public_ip}} --private-key ../../secrets/{{private_key_name}} ../ansible_configs/{{ config_name }}.yaml"
+  }
 }
 {% endif %}
 {% endfor %}

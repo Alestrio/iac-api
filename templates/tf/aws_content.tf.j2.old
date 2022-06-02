@@ -1,0 +1,28 @@
+{% for i in machines if 'aws' in i.providers %}
+provider "aws" {
+    region = local.aws_region
+}
+{% endfor %}
+
+{% for machine in machines %}
+{% if 'aws' in machine.providers %}
+resource "aws_instance" "{{ machine.name }}" {
+    ami = "{{ machine.aws_machine_image }}"
+    instance_type = "{{ machine.aws_type }}"
+    tags = {
+        Name = "{{ machine.name }}"
+    }
+}
+{% endif %}
+{% endfor %}
+
+{% for network in networks %}
+{% if 'aws' in network.provider %}
+resource "aws_vpc" "{{ network.name }}" {
+    cidr_block = "{{ network.subnet[0].ip_cidr_range }}"
+    tags = {
+        Name = "{{ network.name }}"
+    }
+}
+{% endif %}
+{% endfor %}

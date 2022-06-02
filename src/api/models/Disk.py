@@ -14,11 +14,9 @@ class Disk(BaseModel):
     That class represents a disk. It is independent of the provider.
     """
     id: Optional[str]
-    provider: str = 'gcp'
     type: str = "pd-standard"
-    subtype: str = "standard"
     size: int = 10  # GB
-    zone: str = "eu-central-1a"
+    zone: Optional[str]
     name: Optional[str]
 
     @staticmethod
@@ -29,11 +27,9 @@ class Disk(BaseModel):
         :return: Disk object
         """
         return Disk(
-            #id=google_dict['id'],
             provider='gcp',
             type=google_dict['type'].split('/')[-1],
             size=google_dict['diskSizeGb'],
-            #gcp_zone=google_dict['zone'].split('/')[-1],
             name=google_dict['deviceName']
         )
 

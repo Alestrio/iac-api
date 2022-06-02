@@ -10,13 +10,12 @@ import boto3
 import requests
 from pydantic import BaseModel
 
-from models.Network.FirewallRule import FirewallRule
+from models.Network.Firewall import Firewall
 
 
 class Subnetwork(BaseModel):
     id: Optional[str]
     name: str = "subnet-" + os.urandom(4).hex()
-    provider: str = 'gcp'
     ip_cidr_range: Optional[str] = '0.0.0.0/0'
     zone: Optional[str] = 'eu-west-1'
 

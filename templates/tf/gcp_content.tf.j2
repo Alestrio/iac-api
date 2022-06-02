@@ -1,93 +1,104 @@
 provider "google" {
-    project = local.project_id
-    region = local.gcp_region
+    project = "{{ project_id }}"
+    region = "{{ gcp_zone }}"
     credentials = "${file("../../../config/secrets/client_secret.json")}"
 }
-
+# Networks
 {% for net in networks %}
-resource "google_compute_network" "{{net.name}}" {
-    name = "{{net.name}}"
-    auto_create_subnetworks = {{ "true" if net.subnet != "" else "false" }}
+{% if net.PROVIDER == "GCP" %}
+resource "google_compute_network" "{{ net.name }}" {
+    name = "{{ net.name }}"
+    auto_create_subnetworks = false
 }
 
-{% for firewall in net.firewall_rules %}
-resource "google_compute_firewall" "{{firewall.name}}" {
-    name = "{{firewall.name}}"
-    network = "{{ net.name }}"
-    source_ranges = {{ firewall.sranges | tojson}}
-{#  allow or deny => class name to lower case #}
-{% for rule in firewall.rules %}
-        {{ "allow" if firewall.is_allow else "deny" }} {
-            ports = {{ rule.to_ports }}
-            protocol = "{{ rule.protocol }}"
-        }
-{% endfor %}
-    {% if firewall.target_tags != [] %}
-    target_tags = {{ firewall.target_tags }}
-    {% endif %}
-    priority = 1000
+{% for subnet in net.subnetworks %}
+resource "google_compute_subnetwork" "{{ subnet.name }}" {
+    name = "{{ subnet.name }}"
+    ip_cidr_range = "{{ subnet.ip_cidr_range }}"
+    network = google_compute_network.{{ net.name }}.self_link
+    region = "{{ subnet.zone }}"
 }
 {% endfor %}
 
-{% for subnet in net.subnets %}
-resource "google_compute_subnetwork" "{{subnet.name}}" {
-    name = "{{subnet.name}}"
-    ip_cidr_range = "{{subnet.ip_cidr_range}}"
-    network = "{{ net.name }}"
-    region = "{{ local.region }}"
-    private_ip_google_access = "{{ subnet.private_ip_google_access }}"
+ressource "google_compute_firewall" "{{ net.firewalls.name }}" {
+    name = "{{ net.firewalls.name }}"
+    network = google_compute_network.{{ net.name }}.self_link
+    source_ranges = {{ net.firewalls.rules[0].source_networks | tojson }}
+    {% for rule in net.firewalls.rules %}
+    {{ "allow" if net.firewalls.is_allow else "deny" }} {
+        ports = {{ rule.to_ports | tojson }}
+        protocol = "{{ rule.protocol }}"
+    }
 }
 {% endfor %}
-
+{% endif %}
 {% endfor %}
+
 {% for machine in machines %}
-{% if 'gcp' in machine.providers %}
-resource "google_compute_address" "{{ machine.address.name }}" {
-    name = "{{ machine.address.name }}"
-    {% if machine.address.address_type %}    address_type = "{{ machine.address.address_type }}"
+# Create address for machine
+    {% if machine.custom_private_ip != "auto" %}
+    ressource "google_compute_address" "{{ machine.name }}-address" {
+        name = "{{ machine.name }}-address"
+        address = "{{ machine.custom_private_ip }}"
+        subnetwork = google_compute_subnetwork.{{ machine.subnetwork }}.self_link
+        region = "{{ machine.zone }}"
+        address_type = "INTERNAL"
+    }
     {% endif %}
-    {% if machine.address.subnetwork_name %}     subnetwork = google_compute_subnetwork.{{ machine.address.subnetwork_name }}.id
+    {% if machine.custom_public_ip != "none" %}
+        {% if machine.custom_public_ip == "ephemeral" %}
+        resource "google_compute_address" "{{ machine.name }}-public-address" {
+            name = "{{ machine.name }}-public-address"
+            region = "{{ machine.zone }}"
+            address_type = "EXTERNAL"
+        }
+        {% else %}
+            resource "google_compute_address" "{{ machine.name }}-public-address" {
+            name = "{{ machine.name }}-public-address"
+            address = "{{ machine.custom_public_ip }}"
+            subnetwork = google_compute_subnetwork.{{ machine.subnetwork }}.id
+            region = "{{ machine.zone }}"
+            address_type = "EXTERNAL"
+            }
+        {% endif %}
     {% endif %}
-    {% if machine.address.address %}    address = "{{ machine.address.address }}"
-    {% endif %}
-    {% if machine.address.gcp_region %}     region = "{{ machine.address.gcp_region }}"
-    {% endif %}
-}
-
+    {% if machine.provider == "gcp" %}
 resource "google_compute_instance" "{{ machine.name }}" {
-
     name = "{{ machine.name }}"
-    machine_type = "{{ machine.gcp_type }}"
-    zone = "{{ machine.gcp_zone }}"
+    machine_type = "{{ machine.type }}"
+    zone = "{{ machine.zone }}"
+    network = google_compute_network.{{ machine.network }}.self_link
+    subnetwork = google_compute_subnetwork.{{ machine.subnetwork }}.self_link
+    can_ip_forward = true
+    tags = ["{{ machine.name }}"]
     boot_disk {
-        device_name = "{{ machine.name if machine.disks[0].name == "" else machine.disks[0].name }}"
         initialize_params {
-            size = "{{ machine.disks[0].size }}"
-            image = "{{ machine.gcp_machine_image }}"
+            image = "{{ machine.machine_image }}"
         }
     }
     network_interface {
-        network = "{{ machine.gcp_network.name if machine.gcp_network.name else machine.gcp_network }}"
-        access_config {
-            nat_ip = google_compute_address.{{ machine.address.name }}.address
-        }
+        network = google_compute_network.{{ machine.network }}.self_link
+        subnetwork = google_compute_subnetwork.{{ machine.subnetwork }}.self_link
+        {% if machine.custom_public_ip != "none" %}
+            access_config {
+                nat_ip = google_compute_address.{{ machine.name }}-public-address.address
+            }
+    {% endif %}
     }
 
     provisioner "remote-exec" {
         connection {
-          type        = "ssh"
-          user        = local.ssh_user
-          private_key = file(local.private_key_path)
-          host        = self.network_interface.0.access_config.0.nat_ip
+            type        = "ssh"
+            user        = local.ssh_user
+            private_key = file(local.private_key_path)
+            host        = self.network_interface.0.access_config.0.nat_ip
         }
 
         inline = ["sudo apt-get install -y python-minimal python-setuptools"]
     }
     provisioner "local-exec" {
-        command = "ansible-playbook -i ${self.network_interface.0.access_config.0.nat_ip} --private-key ${local.private_key_path} ../ansible_configs/{{ config_name }}.yaml"
+        command = "ansible-playbook -i ${self.network_interface.0.access_config.0.nat_ip} --private-key ../../secrets/{{private_key_name}} ../ansible_configs/{{ config_name }}.yaml"
     }
 }
 {% endif %}
 {% endfor %}
-
-
