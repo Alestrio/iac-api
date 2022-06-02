@@ -18,8 +18,6 @@ from models.Network.Network import Network
 class TerraformConfig(BaseModel):
     name: str = os.urandom(8).hex()
     project_id: str = "environnement-de-test-329611"
-    gcp_region: str = "europe-west1"
-    aws_region: str = "eu-west-1"
     ssh_user: str = "ubuntu"
     private_key_name: str = "sample-key"
     machines: list[Machine]
