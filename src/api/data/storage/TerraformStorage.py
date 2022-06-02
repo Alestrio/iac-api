@@ -25,7 +25,7 @@ def render_content_templates(config: TerraformConfig):
             template = Template(f.read(), trim_blocks=True, lstrip_blocks=True)
             rendered_template = template.render(
                 machines=config.machines, networks=config.networks, project_id=config.project_id,
-                gcp_zone=config.gcp_region, access_key=AWSProvider.get_access_key(),
+                access_key=AWSProvider.get_access_key(),
                 secret_key=AWSProvider.get_secret_key(), ssh_user=config.ssh_user
             )
             content += rendered_template
