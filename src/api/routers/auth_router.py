@@ -15,7 +15,7 @@ from data.database.UserDb import UserDb
 from models.User import Token, User, UserIn
 
 router = APIRouter(
-    prefix="/users",
+    prefix="",
     tags=["Users"],
     responses={
         200: {"description": "Successful operation"},
