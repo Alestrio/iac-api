@@ -20,7 +20,7 @@ resource "aws_vpc" "{{net.name}}" {
 }
 
 # declaring subnets
-{% for i in range(0, net.private_subnet_count) %}
+{% for i in range(net.private_subnet_count) %}
 resource "aws_subnet" "{{net.name}}-{{i}}" {
   vpc_id = "${aws_vpc.{{net.name}}.id}"
   cidr_block = "{{net.cidrs[i]}}"
