@@ -30,6 +30,6 @@ class GCPNetwork(Network):
         return GCPNetwork(
             id=response["id"],
             name=response["name"],
-            subnet=subnetworks,
+            subnetworks=subnetworks,
             firewall_rules=list(firewalls),
         )
